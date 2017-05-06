@@ -78,6 +78,18 @@ class Api_Response {
 		return null;
 	}
 
+	public function get_body() {
+		return $this->body;
+	}
+
+	public function get_headers() {
+		return $this->headers;
+	}
+
+	public function get_status() {
+		return $this->status;
+	}
+
 	/**
 	 * Check whether this instance represents a non-200 response.
 	 *

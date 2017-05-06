@@ -20,6 +20,8 @@ class Api_Client {
 	 */
 	protected $cache;
 
+	protected $cache_duration = 60 * 60;
+
 	/**
 	 * Http client.
 	 *
@@ -76,28 +78,50 @@ class Api_Client {
 	 *
 	 * @param  string $endpoint API endpoint.
 	 *
-	 * @return \WP_Error|Response
+	 * @return Api_Response
 	 */
 	protected function get_and_cache( $endpoint ) {
 		$url = self::BASE_URL . (string) $endpoint;
-		$cache_key = 'api_response_' . $url;
 
-		if ( $this->cache->contains( $cache_key ) ) {
-			list( $status, $headers, $body ) = $this->cache->fetch( $cache_key );
-
-			return new Api_Response( $status, $headers, $body );
+		try {
+			list( $status, $headers, $body ) = $this->remember(
+				$this->get_cache_key( $url ),
+				$this->get_cache_duration(),
+				function() use ( $url ) {
+					return $this->http->get( $url );
+				}
+			);
+		} catch ( \RuntimeException $e ) {
+			// @todo
+			$status = 418;
+			$headers = [];
+			$body = '';
 		}
-
-		$response = $this->http->get( $url );
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-
-		$this->cache->save( $cache_key, $response, HOUR_IN_SECONDS );
-
-		list( $status, $headers, $body ) = $response;
 
 		return new Api_Response( $status, $headers, $body );
+	}
+
+	public function get_cache_duration() {
+		return $this->cache_duration;
+	}
+
+	public function set_cache_duration( $seconds ) {
+		$this->cache_duration = absint( $seconds );
+	}
+
+	protected function get_cache_key( $url ) {
+		return 'api_response_' . $url;
+	}
+
+	protected function remember( $key, $duration, \Closure $callback ) {
+		if ( $this->cache->contains( $key ) ) {
+			return $this->cache->fetch( $key );
+		}
+
+		$value = $callback();
+
+		$this->cache->save( $key, $value, $duration );
+
+		return $value;
 	}
 }

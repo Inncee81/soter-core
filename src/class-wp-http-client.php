@@ -33,6 +33,8 @@ class WP_Http_Client implements Http_Interface {
 	 * @param  string $url The URL to make a request against.
 	 *
 	 * @return array
+	 *
+	 * @throws \RuntimeException When there is an error.
 	 */
 	public function get( $url ) {
 		$args = [ 'user-agent' => $this->user_agent ];
@@ -40,7 +42,7 @@ class WP_Http_Client implements Http_Interface {
 		$response = wp_safe_remote_get( $url, $args );
 
 		if ( is_wp_error( $response ) ) {
-			return $response;
+			throw new \RuntimeException( $response->get_error_message() );
 		}
 
 		return [

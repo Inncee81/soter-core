@@ -20,6 +20,8 @@ interface Http_Interface {
 	 *                         [0] int    Response code.
 	 *                         [1] array  Response headers, keys all in lowercase.
 	 *                         [2] string Response body.
+	 *
+	 * @throws  \RuntimeException When there is an error.
 	 */
 	public function get( $url );
 }
