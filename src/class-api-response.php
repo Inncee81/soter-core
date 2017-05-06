@@ -43,13 +43,6 @@ class Api_Response {
 	protected $status;
 
 	/**
-	 * Cache of vulnerabilities by version.
-	 *
-	 * @var array
-	 */
-	protected $version_cache = [];
-
-	/**
 	 * Class constructor.
 	 *
 	 * @param int      $status  Response status code.
@@ -60,7 +53,8 @@ class Api_Response {
 		$this->status = intval( $status );
 		$this->headers = $headers;
 		$this->body = (string) $body;
-		$this->data = $this->generate_data_array();
+
+		$this->data = $this->generate_data();
 	}
 
 	/**
@@ -82,6 +76,10 @@ class Api_Response {
 		return $this->body;
 	}
 
+	public function get_data() {
+		return $this->data;
+	}
+
 	public function get_headers() {
 		return $this->headers;
 	}
@@ -99,13 +97,19 @@ class Api_Response {
 		return isset( $this->data['error'] );
 	}
 
+	public function has_vulnerabilities() {
+		return isset( $this->data['vulnerabilities'] )
+			&& is_array( $this->data['vulnerabilities'] )
+			&& count( $this->data['vulnerabilities'] );
+	}
+
 	/**
 	 * Vulnerabilities getter.
 	 *
 	 * @return Vulnerability[]
 	 */
-	public function vulnerabilities() {
-		if ( $this->is_error() ) {
+	public function get_vulnerabilities() {
+		if ( ! $this->has_vulnerabilities() ) {
 			return [];
 		}
 
@@ -119,21 +123,16 @@ class Api_Response {
 	 *
 	 * @return Vulnerability[]
 	 */
-	public function vulnerabilities_by_version( $version = null ) {
-		if ( $this->is_error() || empty( $this->data['vulnerabilities'] ) ) {
-			return [];
-		}
-
+	public function get_vulnerabilities_by_version( $version = null ) {
 		if ( is_null( $version ) ) {
 			return $this->data['vulnerabilities'];
 		}
 
-		$version = (string) $version;
-
-		if ( isset( $this->version_cache[ $version ] ) ) {
-			return $this->version_cache[ $version ];
+		if ( ! $this->has_vulnerabilities() ) {
+			return [];
 		}
 
+		$version = (string) $version;
 		$vulnerabilities = [];
 
 		foreach ( $this->data['vulnerabilities'] as $vulnerability ) {
@@ -142,7 +141,7 @@ class Api_Response {
 			}
 		}
 
-		return $this->version_cache[ $version ] = $vulnerabilities;
+		return $vulnerabilities;
 	}
 
 	/**
@@ -150,24 +149,48 @@ class Api_Response {
 	 *
 	 * @return array
 	 */
-	protected function generate_data_array() {
+	protected function generate_data() {
 		// May want to revisit - Non-200 does not automatically mean error.
-		$response_ok = 200 === $this->status;
-		$is_json = isset( $this->headers['content-type'] )
-			&& false !== strpos(
-				$this->headers['content-type'],
-				'application/json'
-			);
-
-		if ( $response_ok && $is_json ) {
-			try {
-				return $this->generate_ok_data_array();
-			} catch ( RuntimeException $e ) {
-				return $this->generate_error_data_array( null, $e->getMessage() );
-			}
+		if ( 200 !== $this->status ) {
+			return $this->generate_error( 'Non-200 status code received' );
 		}
 
-		return $this->generate_error_data_array();
+		if (
+			! isset( $this->headers['content-type'] )
+			|| false === strpos( $this->headers['content-type'], 'application/json' )
+		) {
+			return $this->generate_error( 'Received non-JSON response' );
+		}
+
+		try {
+			$decoded = json_decode( $this->body, true );
+
+			if ( null === $decoded || JSON_ERROR_NONE !== json_last_error() ) {
+				throw new RuntimeException(
+					'Response does not appear to be valid JSON'
+				);
+			}
+
+			$data = current( $decoded );
+			$data['slug'] = key( $decoded );
+
+			if ( isset( $data['last_updated'] ) ) {
+				$data['last_updated'] = new DateTime(
+					$data['last_updated']
+				);
+			}
+
+			$data['vulnerabilities'] = array_map(
+				function( array $vulnerability ) {
+					return new Api_Vulnerability( $vulnerability );
+				},
+				$data['vulnerabilities']
+			);
+
+			return $data;
+		} catch ( RuntimeException $e ) {
+			return $this->generate_error( $e->getMessage() );
+		}
 	}
 
 	/**
@@ -178,48 +201,15 @@ class Api_Response {
 	 *
 	 * @return array
 	 */
-	protected function generate_error_data_array( $code = null, $message = null ) {
-		$code = is_null( $code ) ? $this->status : intval( $code );
+	protected function generate_error( $message = null ) {
 		// Consider using status message as default message here?
 		$message = is_null( $message ) ? 'Invalid endpoint' : (string) $message;
 
 		return [
-			'error' => compact( 'code', 'message' ),
+			'error' => [
+				'code' => $this->status,
+				'message' => $message,
+			],
 		];
-	}
-
-	/**
-	 * Generates a data array representing a valid response.
-	 *
-	 * @return array
-	 *
-	 * @throws  RuntimeException When response cannot be JSON decoded.
-	 */
-	protected function generate_ok_data_array() {
-		$decoded = json_decode( $this->body, true );
-
-		if ( null === $decoded || JSON_ERROR_NONE !== json_last_error() ) {
-			throw new RuntimeException(
-				'Response does not appear to be valid JSON'
-			);
-		}
-
-		$data = current( $decoded );
-		$data['slug'] = key( $decoded );
-
-		if ( isset( $data['last_updated'] ) ) {
-			$data['last_updated'] = new DateTime(
-				$data['last_updated']
-			);
-		}
-
-		$data['vulnerabilities'] = array_map(
-			function( array $vulnerability ) {
-				return new Api_Vulnerability( $vulnerability );
-			},
-			$data['vulnerabilities']
-		);
-
-		return $data;
 	}
 }
