@@ -10,7 +10,7 @@ namespace Soter_Core;
 /**
  * This class checks all plugins, themes and core against the WPScan API.
  */
-class Checker {
+class Package_Checker {
 	/**
 	 * WPScan API Client.
 	 *
