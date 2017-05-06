@@ -7,10 +7,6 @@
 
 namespace Soter_Core;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	die;
-}
-
 /**
  * This class creates a simple HTTP GET client using the WP HTTP API.
  */

@@ -10,10 +10,6 @@ namespace Soter_Core;
 use Closure;
 use WP_Theme;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	die;
-}
-
 /**
  * This class checks all plugins, themes and core against the WPScan API.
  */

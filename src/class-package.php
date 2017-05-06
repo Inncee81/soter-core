@@ -7,10 +7,6 @@
 
 namespace Soter_Core;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	die;
-}
-
 /**
  * This class acts as a data container for packages to provide some minmal
  * normalization between themes, plugins and WordPress core.

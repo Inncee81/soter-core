@@ -10,10 +10,6 @@ namespace Soter_Core;
 use DateTime;
 use RuntimeException;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	die;
-}
-
 /**
  * This class provides a simple wrapper for responses from the WPScan API.
  */

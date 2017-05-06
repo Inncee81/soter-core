@@ -7,13 +7,6 @@
 
 namespace Soter_Core;
 
-use Soter_Core\Http_Interface;
-use Soter_Core\Cache_Interface;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	die;
-}
-
 /**
  * The actual WPScan API client implementation.
  */

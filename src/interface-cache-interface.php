@@ -7,10 +7,6 @@
 
 namespace Soter_Core;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	die;
-}
-
 /**
  * Simple cache provider interface.
  */

@@ -7,10 +7,6 @@
 
 namespace Soter_Core;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	die;
-}
-
 /**
  * This class wraps the transient cache API to implement Cache_Interface.
  */
