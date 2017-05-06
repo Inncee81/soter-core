@@ -2,10 +2,10 @@
 /**
  * WPScan API response wrapper.
  *
- * @package soter
+ * @package soter-core
  */
 
-namespace SSNepenthe\Soter\WPScan;
+namespace Soter_Core;
 
 use DateTime;
 use RuntimeException;
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * This class provides a simple wrapper for responses from the WPScan API.
  */
-class Response {
+class Api_Response {
 	/**
 	 * Response body.
 	 *
@@ -207,7 +207,7 @@ class Response {
 
 		$data['vulnerabilities'] = array_map(
 			function( array $vulnerability ) {
-				return new Vulnerability( $vulnerability );
+				return new Api_Vulnerability( $vulnerability );
 			},
 			$data['vulnerabilities']
 		);

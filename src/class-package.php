@@ -2,10 +2,10 @@
 /**
  * A data container for packages.
  *
- * @package soter
+ * @package soter-core
  */
 
-namespace SSNepenthe\Soter;
+namespace Soter_Core;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die;

@@ -2,10 +2,10 @@
 /**
  * WP Transient Cache implementation.
  *
- * @package soter
+ * @package soter-core
  */
 
-namespace SSNepenthe\Soter\Cache;
+namespace Soter_Core;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die;

@@ -2,13 +2,13 @@
 /**
  * WPScan API client.
  *
- * @package soter
+ * @package soter-core
  */
 
-namespace SSNepenthe\Soter\WPScan;
+namespace Soter_Core;
 
-use SSNepenthe\Soter\Http\Http_Interface;
-use SSNepenthe\Soter\Cache\Cache_Interface;
+use Soter_Core\Http_Interface;
+use Soter_Core\Cache_Interface;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die;
@@ -92,7 +92,7 @@ class Api_Client {
 		if ( $this->cache->contains( $cache_key ) ) {
 			list( $status, $headers, $body ) = $this->cache->fetch( $cache_key );
 
-			return new Response( $status, $headers, $body );
+			return new Api_Response( $status, $headers, $body );
 		}
 
 		$response = $this->http->get( $url );
@@ -105,6 +105,6 @@ class Api_Client {
 
 		list( $status, $headers, $body ) = $response;
 
-		return new Response( $status, $headers, $body );
+		return new Api_Response( $status, $headers, $body );
 	}
 }

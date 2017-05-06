@@ -2,14 +2,13 @@
 /**
  * Integrates with the Api client to check an entire site.
  *
- * @package soter
+ * @package soter-core
  */
 
-namespace SSNepenthe\Soter;
+namespace Soter_Core;
 
 use Closure;
 use WP_Theme;
-use SSNepenthe\Soter\WPScan\Api_Client;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die;

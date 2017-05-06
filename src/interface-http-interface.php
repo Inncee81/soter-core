@@ -2,10 +2,10 @@
 /**
  * HTTP Client Interface.
  *
- * @package soter
+ * @package soter-core
  */
 
-namespace SSNepenthe\Soter\Http;
+namespace Soter_Core;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die;
