@@ -13,6 +13,11 @@ use WP_Theme;
  * Defines the site checker class.
  */
 class Checker {
+	/**
+	 * API client instance.
+	 *
+	 * @var Api_Client
+	 */
 	protected $client;
 
 	/**
@@ -22,12 +27,22 @@ class Checker {
 	 */
 	protected $package_cache = [];
 
+	/**
+	 * Map of package types to API client methods.
+	 *
+	 * @var string[]
+	 */
 	protected $method_map = [
 		'plugin' => 'plugins',
 		'theme' => 'themes',
 		'wordpress' => 'wordpresses',
 	];
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param Api_Client $client API client instance.
+	 */
 	public function __construct( Api_Client $client ) {
 		$this->client = $client;
 	}
@@ -63,6 +78,8 @@ class Checker {
 	 * Check multiple packages.
 	 *
 	 * @param  Api_Package[] $packages List of Package instances.
+	 * @param  string[]      $ignored  List of package slugs to ignore.
+	 *
 	 * @return Api_Package[]
 	 */
 	public function check_packages( array $packages, array $ignored = [] ) {
@@ -93,6 +110,8 @@ class Checker {
 	/**
 	 * Check currently installed plugins.
 	 *
+	 * @param string[] $ignored List of plugin slugs to ignore.
+	 *
 	 * @return Api_Vulnerability[]
 	 */
 	public function check_plugins( array $ignored = [] ) {
@@ -101,6 +120,8 @@ class Checker {
 
 	/**
 	 * Check all currently installed packages.
+	 *
+	 * @param string[] $ignored List of package slugs to ignore.
 	 *
 	 * @return Api_Vulnerability[]
 	 */
@@ -111,6 +132,8 @@ class Checker {
 	/**
 	 * Check currently installed themes.
 	 *
+	 * @param string[] $ignored List of theme slugs to ignore.
+	 *
 	 * @return Api_Vulnerability[]
 	 */
 	public function check_themes( array $ignored = [] ) {
@@ -120,12 +143,19 @@ class Checker {
 	/**
 	 * Check current version of WordPress.
 	 *
+	 * @param string[] $ignored List of WordPress slugs to ignore.
+	 *
 	 * @return Api_Vulnerability[]
 	 */
 	public function check_wordpress( array $ignored = [] ) {
 		return $this->check_packages( $this->get_wordpress(), $ignored );
 	}
 
+	/**
+	 * Get the API client instance.
+	 *
+	 * @return Api_Client
+	 */
 	public function get_client() {
 		return $this->client;
 	}
@@ -267,6 +297,15 @@ class Checker {
 		return $this->package_cache['wordpresses'];
 	}
 
+	/**
+	 * Get the appropriate API client method for a given package.
+	 *
+	 * @param  Package $package Package instance.
+	 *
+	 * @return string
+	 *
+	 * @throws \InvalidArgumentException When there is no matching method for a type.
+	 */
 	protected function get_client_method( Package $package ) {
 		if ( isset( $this->method_map[ $package->get_type() ] ) ) {
 			return $this->method_map[ $package->get_type() ];
