@@ -2,13 +2,6 @@
 
 class Checker_Test extends WP_UnitTestCase {
 	/** @test */
-	function it_provides_access_to_api_client() {
-		$checker = $this->make_checker();
-
-		$this->assertInstanceOf( 'Soter_Core\\Api_Client', $checker->get_client() );
-	}
-
-	/** @test */
 	function it_can_check_a_package() {
 		$checker = $this->make_checker();
 		$package = new Soter_Core\Package( 'contact-form-7', 'plugin', '3.5' );
@@ -60,6 +53,13 @@ class Checker_Test extends WP_UnitTestCase {
 			],
 			wp_list_pluck( $vulns, 'title' )
 		);
+	}
+
+	/** @test */
+	function it_provides_access_to_api_client() {
+		$checker = $this->make_checker();
+
+		$this->assertInstanceOf( 'Soter_Core\\Api_Client', $checker->get_client() );
 	}
 
 	protected function make_checker() {

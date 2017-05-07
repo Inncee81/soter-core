@@ -142,17 +142,6 @@ class Api_Response_Test extends WP_UnitTestCase {
 	}
 
 	/** @test */
-	function it_knows_when_there_has_been_an_error() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
-			'/non-200-response'
-		);
-
-		$response = new Api_Response( $status, $headers, $body );
-
-		$this->assertTrue( $response->is_error() );
-	}
-
-	/** @test */
 	function it_provides_access_to_vulnerabilities() {
 		list( $status, $headers, $body ) = static::get_http_fixture_array(
 			'/api/v2/plugins/contact-form-7'
@@ -161,17 +150,6 @@ class Api_Response_Test extends WP_UnitTestCase {
 		$response = new Api_Response( $status, $headers, $body );
 
 		$this->assertSame( 2, count( $response->get_vulnerabilities() ) );
-	}
-
-	/** @test */
-	function it_knows_when_there_are_no_vulnerabilities() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
-			'/non-200-response'
-		);
-
-		$response = new Api_Response( $status, $headers, $body );
-
-		$this->assertFalse( $response->has_vulnerabilities() );
 	}
 
 	/** @test */
@@ -193,7 +171,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 		$response = new Api_Response( $status, $headers, $body );
 
-		// Should return all vulnerabilities.
+		// No version specified - Should return all vulnerabilities.
 		$this->assertSame( 2, count( $response->get_vulnerabilities_by_version() ) );
 
 		$this->assertSame(
@@ -208,5 +186,27 @@ class Api_Response_Test extends WP_UnitTestCase {
 			0,
 			count( $response->get_vulnerabilities_by_version( '4.7' ) )
 		);
+	}
+
+	/** @test */
+	function it_knows_when_there_are_no_vulnerabilities() {
+		list( $status, $headers, $body ) = static::get_http_fixture_array(
+			'/non-200-response'
+		);
+
+		$response = new Api_Response( $status, $headers, $body );
+
+		$this->assertFalse( $response->has_vulnerabilities() );
+	}
+
+	/** @test */
+	function it_knows_when_there_has_been_an_error() {
+		list( $status, $headers, $body ) = static::get_http_fixture_array(
+			'/non-200-response'
+		);
+
+		$response = new Api_Response( $status, $headers, $body );
+
+		$this->assertTrue( $response->is_error() );
 	}
 }
