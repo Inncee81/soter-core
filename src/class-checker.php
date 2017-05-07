@@ -87,12 +87,12 @@ class Checker {
 	 * @throws  \InvalidArgumentException When the package type is not supported.
 	 */
 	protected function get_client_method( Package $package ) {
-		if ( isset( self::METHOD_MAP[ $package->get_type() ] ) ) {
-			return self::METHOD_MAP[ $package->get_type() ];
+		$type = $package->get_type();
+
+		if ( isset( self::METHOD_MAP[ $type ] ) ) {
+			return self::METHOD_MAP[ $type ];
 		}
 
-		throw new \InvalidArgumentException(
-			"Unsupported package type [{$package->get_type()}]"
-		);
+		throw new \InvalidArgumentException( "Unsupported package type [{$type}]" );
 	}
 }
