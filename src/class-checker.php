@@ -1,6 +1,6 @@
 <?php
 /**
- * Integrates with the Api client to check an entire site.
+ * Checker class.
  *
  * @package soter-core
  */
@@ -8,7 +8,7 @@
 namespace Soter_Core;
 
 /**
- * This class checks all plugins, themes and core against the WPScan API.
+ * Defines the checker class.
  */
 class Checker {
 	const METHOD_MAP = [
@@ -34,18 +34,9 @@ class Checker {
 	}
 
 	/**
-	 * Get the Api_Client instance.
+	 * Check a single package.
 	 *
-	 * @return Api_Client
-	 */
-	public function get_client() {
-		return $this->client;
-	}
-
-	/**
-	 * Run a check on a specific package.
-	 *
-	 * @param  Package $package Theme/plugin/WordPress package.
+	 * @param  Package $package    Package instance.
 	 *
 	 * @return Api_Vulnerability[]
 	 */
@@ -58,9 +49,9 @@ class Checker {
 	}
 
 	/**
-	 * Run a check on multiple packages.
+	 * Check a list of packages.
 	 *
-	 * @param  Package[] $packages List of packages to check.
+	 * @param  Package[] $packages List of package instances.
 	 *
 	 * @return Api_Vulnerability[]
 	 */
@@ -77,6 +68,24 @@ class Checker {
 		return array_unique( $vulnerabilities );
 	}
 
+	/**
+	 * Get the API client instance.
+	 *
+	 * @return Api_Client
+	 */
+	public function get_client() {
+		return $this->client;
+	}
+
+	/**
+	 * Get the relevant API client method name for checking a given package.
+	 *
+	 * @param  Package $package Package instance.
+	 *
+	 * @return string
+	 *
+	 * @throws  \InvalidArgumentException When the package type is not supported.
+	 */
 	protected function get_client_method( Package $package ) {
 		if ( isset( self::METHOD_MAP[ $package->get_type() ] ) ) {
 			return self::METHOD_MAP[ $package->get_type() ];

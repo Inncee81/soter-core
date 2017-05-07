@@ -1,6 +1,6 @@
 <?php
 /**
- * WP HTTP API Implementation.
+ * WP_Http_Client class.
  *
  * @package soter-core
  */
@@ -8,7 +8,7 @@
 namespace Soter_Core;
 
 /**
- * This class creates a simple HTTP GET client using the WP HTTP API.
+ * Defines the WP HTTP client class.
  */
 class WP_Http_Client implements Http_Interface {
 	/**
@@ -37,8 +37,9 @@ class WP_Http_Client implements Http_Interface {
 	 * @throws \RuntimeException When there is an error.
 	 */
 	public function get( $url ) {
-		$args = [ 'user-agent' => $this->user_agent ];
-
+		$args = [
+			'user-agent' => $this->user_agent,
+		];
 		$response = wp_safe_remote_get( $url, $args );
 
 		if ( is_wp_error( $response ) ) {

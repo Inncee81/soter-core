@@ -1,6 +1,6 @@
 <?php
 /**
- * HTTP Client Interface.
+ * HTTP_Interface interface.
  *
  * @package soter-core
  */
@@ -8,7 +8,7 @@
 namespace Soter_Core;
 
 /**
- * Simple HTTP GET client interface.
+ * Defines the HTTP interface.
  */
 interface Http_Interface {
 	/**

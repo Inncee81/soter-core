@@ -1,6 +1,6 @@
 <?php
 /**
- * WP Transient Cache implementation.
+ * WP_Transient_Cache class.
  *
  * @package soter-core
  */
@@ -8,7 +8,7 @@
 namespace Soter_Core;
 
 /**
- * This class wraps the transient cache API to implement Cache_Interface.
+ * Defines the WP transient cache class.
  */
 class WP_Transient_Cache implements Cache_Interface {
 	/**
@@ -35,7 +35,7 @@ class WP_Transient_Cache implements Cache_Interface {
 	 *
 	 * @param  string $key Cache key.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function contains( $key ) {
 		return false !== get_transient( $this->generate_id( $key ) );
@@ -49,17 +49,23 @@ class WP_Transient_Cache implements Cache_Interface {
 	 * @return mixed
 	 */
 	public function fetch( $key ) {
-		return get_transient( $this->generate_id( $key ) );
+		$value = get_transient( $this->generate_id( $key ) );
+
+		if ( false === $value ) {
+			return null;
+		}
+
+		return $value;
 	}
 
 	/**
 	 * Save a value to the cache.
 	 *
-	 * @param  string $key      Cache key.
-	 * @param  mixed  $data     The data to save.
-	 * @param  int    $lifetime How long in seconds the entry is good for.
+	 * @param  string  $key      Cache key.
+	 * @param  mixed   $data     The data to save.
+	 * @param  integer $lifetime How long in seconds the entry is good for.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function save( $key, $data, $lifetime = 0 ) {
 		return set_transient( $this->generate_id( $key ), $data, $lifetime );

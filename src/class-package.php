@@ -1,6 +1,6 @@
 <?php
 /**
- * A data container for packages.
+ * Package class.
  *
  * @package soter-core
  */
@@ -8,6 +8,8 @@
 namespace Soter_Core;
 
 /**
+ * Defines the package class.
+ *
  * This class acts as a data container for packages to provide some minmal
  * normalization between themes, plugins and WordPress core.
  */
