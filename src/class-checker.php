@@ -11,18 +11,23 @@ namespace Soter_Core;
  * Defines the checker class.
  */
 class Checker {
-	const METHOD_MAP = [
-		'plugin' => 'plugins',
-		'theme' => 'themes',
-		'wordpress' => 'wordpresses',
-	];
-
 	/**
 	 * WPScan API Client.
 	 *
 	 * @var Api_Client
 	 */
 	protected $client;
+
+	/**
+	 * Map of package types => API client methods.
+	 *
+	 * @var string[]
+	 */
+	protected $method_map = [
+		'plugin' => 'plugins',
+		'theme' => 'themes',
+		'wordpress' => 'wordpresses',
+	];
 
 	/**
 	 * Class constructor.
@@ -87,12 +92,12 @@ class Checker {
 	 * @throws  \InvalidArgumentException When the package type is not supported.
 	 */
 	protected function get_client_method( Package $package ) {
-		$type = $package->get_type();
-
-		if ( isset( self::METHOD_MAP[ $type ] ) ) {
-			return self::METHOD_MAP[ $type ];
+		if ( isset( $this->method_map[ $package->get_type() ] ) ) {
+			return $this->method_map[ $package->get_type() ];
 		}
 
-		throw new \InvalidArgumentException( "Unsupported package type [{$type}]" );
+		throw new \InvalidArgumentException(
+			"Unsupported package type [{$package->get_type()}]"
+		);
 	}
 }
