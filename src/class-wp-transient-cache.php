@@ -26,8 +26,8 @@ class WP_Transient_Cache implements Cache_Interface {
 	 *
 	 * @param string $prefix Prefix to use for all cache keys.
 	 */
-	public function __construct( $prefix ) {
-		$this->prefix = substr( (string) $prefix, 0, 12 ) . '_';
+	public function __construct( $prefix = '' ) {
+		$this->prefix = substr( (string) $prefix, 0, 12 );
 	}
 
 	/**
@@ -79,6 +79,12 @@ class WP_Transient_Cache implements Cache_Interface {
 	 * @return string
 	 */
 	protected function generate_id( $key ) {
-		return $this->prefix . hash( 'md5', (string) $key );
+		$key = hash( 'md5', (string) $key );
+
+		if ( $this->prefix ) {
+			$key = $this->prefix . '_' . $key;
+		}
+
+		return $key;
 	}
 }
