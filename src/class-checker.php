@@ -11,6 +11,12 @@ namespace Soter_Core;
  * This class checks all plugins, themes and core against the WPScan API.
  */
 class Checker {
+	const METHOD_MAP = [
+		'plugin' => 'plugins',
+		'theme' => 'themes',
+		'wordpress' => 'wordpresses',
+	];
+
 	/**
 	 * WPScan API Client.
 	 *
@@ -43,16 +49,12 @@ class Checker {
 	 *
 	 * @return Api_Vulnerability[]
 	 */
-	protected function check_package( Package $package ) {
-		$client_method = $package->get_type();
+	public function check_package( Package $package ) {
+		$client_method = $this->get_client_method( $package );
 
 		$response = $this->client->{$client_method}( $package->get_slug() );
 
-		if ( is_wp_error( $response ) ) {
-			return [];
-		}
-
-		return $response->vulnerabilities_by_version( $package->get_version() );
+		return $response->get_vulnerabilities_by_version( $package->get_version() );
 	}
 
 	/**
@@ -62,7 +64,7 @@ class Checker {
 	 *
 	 * @return Api_Vulnerability[]
 	 */
-	protected function check_packages( array $packages ) {
+	public function check_packages( array $packages ) {
 		$vulnerabilities = [];
 
 		foreach ( $packages as $package ) {
@@ -73,5 +75,15 @@ class Checker {
 		}
 
 		return array_unique( $vulnerabilities );
+	}
+
+	protected function get_client_method( Package $package ) {
+		if ( isset( self::METHOD_MAP[ $package->get_type() ] ) ) {
+			return self::METHOD_MAP[ $package->get_type() ];
+		}
+
+		throw new \InvalidArgumentException(
+			"Unsupported package type [{$package->get_type()}]"
+		);
 	}
 }
