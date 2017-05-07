@@ -172,7 +172,7 @@ class Api_Response {
 			}
 
 			$data = current( $decoded );
-			$data['slug'] = key( $decoded );
+			$slug = $data['slug'] = key( $decoded );
 
 			if ( isset( $data['last_updated'] ) ) {
 				$data['last_updated'] = new DateTime(
@@ -181,8 +181,8 @@ class Api_Response {
 			}
 
 			$data['vulnerabilities'] = array_map(
-				function( array $vulnerability ) {
-					return new Api_Vulnerability( $vulnerability );
+				function( array $vulnerability ) use ( $slug ) {
+					return new Api_Vulnerability( $slug, $vulnerability );
 				},
 				$data['vulnerabilities']
 			);
