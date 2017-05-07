@@ -7,6 +7,8 @@
 
 namespace Soter_Core;
 
+use WP_Theme;
+
 /**
  * Defines the site checker class.
  */
@@ -218,13 +220,15 @@ class Checker {
 			return $this->package_cache['themes'];
 		}
 
-		$this->package_cache['themes'] = array_map( function( WP_Theme $theme ) {
+		$themes = array_map( function( WP_Theme $theme ) {
 			return new Package(
-				$theme->stylesheet,
+				$theme->get_stylesheet(),
 				'theme',
-				$theme->get( 'Version ' )
+				$theme->get( 'Version' )
 			);
 		}, wp_get_themes() );
+
+		$this->package_cache['themes'] = array_values( $themes );
 
 		return $this->package_cache['themes'];
 	}
@@ -249,14 +253,16 @@ class Checker {
 			return [];
 		}
 
-		if ( isset( $this->package_cache['wordpress'] ) ) {
-			return $this->package_cache['wordpress'];
+		if ( isset( $this->package_cache['wordpresses'] ) ) {
+			return $this->package_cache['wordpresses'];
 		}
 
 		$version = get_bloginfo( 'version' );
 		$slug = str_replace( '.', '', $version );
 
-		$this->wordpress_cache = [ new Package( $slug, 'wordpress', $version ) ];
+		$this->package_cache['wordpresses'] = [
+			new Package( $slug, 'wordpress', $version ),
+		];
 
 		return $this->package_cache['wordpresses'];
 	}

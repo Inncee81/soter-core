@@ -62,6 +62,27 @@ class Checker_Test extends WP_UnitTestCase {
 		$this->assertInstanceOf( 'Soter_Core\\Api_Client', $checker->get_client() );
 	}
 
+	/** @test */
+	function it_can_check_plugin_theme_and_wordpress_types() {
+		$checker = $this->make_checker();
+		$packages = [
+			new Soter_Core\Package( 'contact-form-7', 'plugin', '3.7' ),
+			new Soter_Core\Package( 'twentyfifteen', 'theme', '1.1' ),
+			new Soter_Core\Package( '474', 'wordpress', '4.7.4' ),
+		];
+
+		$vulns = $checker->check_packages( $packages );
+
+		$this->assertEqualSets(
+			[
+				'Contact Form 7 <= 3.7.1 - Security Bypass',
+				'Twenty Fifteen Theme <= 1.1 - DOM Cross-Site Scripting (XSS)',
+				'WordPress 2.3-4.7.4 - Host Header Injection in Password Reset',
+			],
+			wp_list_pluck( $vulns, 'title' )
+		);
+	}
+
 	protected function make_checker() {
 		$http = new Filesystem_Http_Client;
 		$cache = new Null_Cache;
