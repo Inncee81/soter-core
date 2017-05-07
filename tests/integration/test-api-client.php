@@ -4,6 +4,20 @@ use Soter_Core\Api_Client;
 
 class Api_Client_Test extends WP_UnitTestCase {
 	/** @test */
+	function it_provides_access_to_cache_duration() {
+		$http = new Filesystem_Http_Client;
+		$cache = new Null_Cache;
+
+		$client = new Api_Client( $http, $cache );
+
+		$this->assertSame( 3600, $client->get_cache_duration() );
+
+		$client->set_cache_duration( 60 );
+
+		$this->assertSame( 60, $client->get_cache_duration() );
+	}
+
+	/** @test */
 	function it_can_make_requests_to_the_plugins_endpoint() {
 		$http = new Filesystem_Http_Client;
 		$cache = new Null_Cache;
