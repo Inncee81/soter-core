@@ -10,7 +10,7 @@ namespace Soter_Core;
 /**
  * Defines the API client class.
  */
-class Api_Client {
+class Api_Client implements Client_Interface {
 	const BASE_URL = 'https://wpvulndb.com/api/v2/';
 
 	/**
@@ -59,7 +59,7 @@ class Api_Client {
 	 *
 	 * @param  string $slug Plugin slug.
 	 *
-	 * @return Api_Response
+	 * @return Response_Interface
 	 */
 	public function plugins( $slug ) {
 		return $this->get_and_cache( 'plugins/' . $slug );
@@ -79,7 +79,7 @@ class Api_Client {
 	 *
 	 * @param  string $slug Theme slug.
 	 *
-	 * @return Api_Response
+	 * @return Response_Interface
 	 */
 	public function themes( $slug ) {
 		return $this->get_and_cache( 'themes/' . $slug );
@@ -90,7 +90,7 @@ class Api_Client {
 	 *
 	 * @param  string $slug WordPress slug (aka version stripped of "." characters).
 	 *
-	 * @return Api_Response
+	 * @return Response_Interface
 	 */
 	public function wordpresses( $slug ) {
 		return $this->get_and_cache( 'wordpresses/' . $slug );
@@ -101,7 +101,7 @@ class Api_Client {
 	 *
 	 * @param  string $endpoint API endpoint.
 	 *
-	 * @return Api_Response
+	 * @return Response_Interface
 	 */
 	protected function get_and_cache( $endpoint ) {
 		$http = $this->http;

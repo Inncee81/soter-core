@@ -13,7 +13,7 @@ namespace Soter_Core;
  * This class acts as a data container for packages to provide some minmal
  * normalization between themes, plugins and WordPress core.
  */
-class Package {
+class Package implements Package_Interface {
 	/**
 	 * Package slug.
 	 *

@@ -13,7 +13,7 @@ use RuntimeException;
 /**
  * Defines the API response class.
  */
-class Api_Response {
+class Api_Response implements Response_Interface {
 	/**
 	 * Raw response body.
 	 *
@@ -111,7 +111,7 @@ class Api_Response {
 	/**
 	 * Vulnerabilities getter.
 	 *
-	 * @return Api_Vulnerability[]
+	 * @return Vulnerability_Interface[]
 	 */
 	public function get_vulnerabilities() {
 		if ( ! $this->has_vulnerabilities() ) {
@@ -126,7 +126,7 @@ class Api_Response {
 	 *
 	 * @param  string|null $version Package version.
 	 *
-	 * @return Api_Vulnerability[]
+	 * @return Vulnerability_Interface[]
 	 */
 	public function get_vulnerabilities_by_version( $version = null ) {
 		if ( is_null( $version ) ) {

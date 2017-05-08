@@ -12,18 +12,18 @@ use WP_Theme;
 /**
  * Defines the site checker class.
  */
-class Checker {
+class Checker implements Checker_Interface {
 	/**
 	 * API client instance.
 	 *
-	 * @var Api_Client
+	 * @var Client_Interface
 	 */
 	protected $client;
 
 	/**
 	 * Cache of Package instances for all packages installed on site.
 	 *
-	 * @var Package[]
+	 * @var Package_Interface[]
 	 */
 	protected $package_cache = array();
 
@@ -41,20 +41,20 @@ class Checker {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Api_Client $client API client instance.
+	 * @param Client_Interface $client API client instance.
 	 */
-	public function __construct( Api_Client $client ) {
+	public function __construct( Client_Interface $client ) {
 		$this->client = $client;
 	}
 
 	/**
 	 * Check a single package.
 	 *
-	 * @param  Package $package Package instance.
+	 * @param  Package_Interface $package Package instance.
 	 *
-	 * @return Api_Vulnerability[]
+	 * @return Vulnerability_Interface[]
 	 */
-	public function check_package( Package $package ) {
+	public function check_package( Package_Interface $package ) {
 		$client_method = $this->get_client_method( $package );
 
 		$response = $this->client->{$client_method}( $package->get_slug() );
@@ -77,10 +77,10 @@ class Checker {
 	/**
 	 * Check multiple packages.
 	 *
-	 * @param  Api_Package[] $packages List of Package instances.
-	 * @param  string[]      $ignored  List of package slugs to ignore.
+	 * @param  Package_Interface[] $packages List of Package instances.
+	 * @param  string[]            $ignored  List of package slugs to ignore.
 	 *
-	 * @return Api_Package[]
+	 * @return Vulnerability_Interface[]
 	 */
 	public function check_packages( array $packages, array $ignored = array() ) {
 		if ( ! empty( $ignored ) ) {
@@ -115,7 +115,7 @@ class Checker {
 	 *
 	 * @param string[] $ignored List of plugin slugs to ignore.
 	 *
-	 * @return Api_Vulnerability[]
+	 * @return Vulnerability_Interface[]
 	 */
 	public function check_plugins( array $ignored = array() ) {
 		return $this->check_packages( $this->get_plugins(), $ignored );
@@ -126,7 +126,7 @@ class Checker {
 	 *
 	 * @param string[] $ignored List of package slugs to ignore.
 	 *
-	 * @return Api_Vulnerability[]
+	 * @return Vulnerability_Interface[]
 	 */
 	public function check_site( array $ignored = array() ) {
 		return $this->check_packages( $this->get_packages(), $ignored );
@@ -137,7 +137,7 @@ class Checker {
 	 *
 	 * @param string[] $ignored List of theme slugs to ignore.
 	 *
-	 * @return Api_Vulnerability[]
+	 * @return Vulnerability_Interface[]
 	 */
 	public function check_themes( array $ignored = array() ) {
 		return $this->check_packages( $this->get_themes(), $ignored );
@@ -148,7 +148,7 @@ class Checker {
 	 *
 	 * @param string[] $ignored List of WordPress slugs to ignore.
 	 *
-	 * @return Api_Vulnerability[]
+	 * @return Vulnerability_Interface[]
 	 */
 	public function check_wordpress( array $ignored = array() ) {
 		return $this->check_packages( $this->get_wordpress(), $ignored );
@@ -157,7 +157,7 @@ class Checker {
 	/**
 	 * Get the API client instance.
 	 *
-	 * @return Api_Client
+	 * @return Client_Interface
 	 */
 	public function get_client() {
 		return $this->client;
@@ -175,7 +175,7 @@ class Checker {
 	/**
 	 * Get a list of all installed packages.
 	 *
-	 * @return Package[]
+	 * @return Package_Interface[]
 	 */
 	public function get_packages() {
 		return array_merge(
@@ -197,7 +197,7 @@ class Checker {
 	/**
 	 * Get a list of all installed plugins.
 	 *
-	 * @return Package[]
+	 * @return Package_Interface[]
 	 */
 	public function get_plugins() {
 		// Class is being used outside of WordPress.
@@ -241,7 +241,7 @@ class Checker {
 	/**
 	 * Get a list of all installed themes.
 	 *
-	 * @return Package[]
+	 * @return Package_Interface[]
 	 */
 	public function get_themes() {
 		// Class is being used outside of WordPress.
@@ -278,7 +278,7 @@ class Checker {
 	/**
 	 * Get a list of all installed WordPress versions (should only have 1 item).
 	 *
-	 * @return Package[]
+	 * @return Package_Interface[]
 	 */
 	public function get_wordpress() {
 		// Class is being used outside of WordPress.
@@ -303,13 +303,13 @@ class Checker {
 	/**
 	 * Get the appropriate API client method for a given package.
 	 *
-	 * @param  Package $package Package instance.
+	 * @param  Package_Interface $package Package instance.
 	 *
 	 * @return string
 	 *
 	 * @throws \InvalidArgumentException When there is no matching method for a type.
 	 */
-	protected function get_client_method( Package $package ) {
+	protected function get_client_method( Package_Interface $package ) {
 		if ( isset( $this->method_map[ $package->get_type() ] ) ) {
 			return $this->method_map[ $package->get_type() ];
 		}
