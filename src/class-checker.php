@@ -290,9 +290,9 @@ class Checker {
 		$version = get_bloginfo( 'version' );
 		$slug = str_replace( '.', '', $version );
 
-		$this->package_cache['wordpresses'] = [
+		$this->package_cache['wordpresses'] = array(
 			new Package( $slug, 'wordpress', $version ),
-		];
+		);
 
 		return $this->package_cache['wordpresses'];
 	}
