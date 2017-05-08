@@ -42,11 +42,6 @@ before_script:
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
       bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-      if [[ ${TRAVIS_PHP_VERSION:0:2} == "5." ]]; then
-        composer global require "phpunit/phpunit=4.8.*"
-      else
-        composer global require "phpunit/phpunit=5.7.*"
-      fi
     fi
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
@@ -57,8 +52,8 @@ before_script:
 script:
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
-      phpunit --bootstrap=tests/unit/bootstrap.php --testsuite=unit
-      phpunit --bootstrap=tests/integration/bootstrap.php --testsuite=integration
+      vendor/bin/phpunit --bootstrap=tests/unit/bootstrap.php --testsuite=unit
+      vendor/bin/phpunit --bootstrap=tests/integration/bootstrap.php --testsuite=integration
     fi
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
