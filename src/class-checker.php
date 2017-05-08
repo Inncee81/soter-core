@@ -217,8 +217,11 @@ class Checker implements Checker_Interface {
 
 		$this->package_cache['plugins'] = array_map(
 			function( $file, array $plugin ) {
-				$parts = explode( DIRECTORY_SEPARATOR, $file );
-				$slug = array_shift( $parts );
+				if ( false === strpos( $file, '/' ) ) {
+					$slug = basename( $file, '.php' );
+				} else {
+					$slug = dirname( $file );
+				}
 
 				return new Package( $slug, 'plugin', $plugin['Version'] );
 			},

@@ -41,7 +41,7 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			'akismet',
 			'contact-form-7',
 			'debug-bar',
-			'hello.php',
+			'hello',
 			'twentyfifteen',
 			'twentysixteen',
 			'twentyseventeen',
@@ -65,8 +65,8 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 		array_walk( $plugins, [ $this, 'assert_package_is_plugin' ] );
 		$this->assertSame( 4, $checker->get_plugin_count() );
 		$this->assertEquals(
-			// @todo Need to revisit single-file plugins - hello.php should be hello-dolly.
-			array( 'akismet', 'contact-form-7', 'debug-bar', 'hello.php' ),
+			// @todo Need to revisit single-file plugins - hello should be hello-dolly.
+			array( 'akismet', 'contact-form-7', 'debug-bar', 'hello' ),
 			$slugs
 		);
 	}
