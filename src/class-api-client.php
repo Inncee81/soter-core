@@ -104,14 +104,15 @@ class Api_Client {
 	 * @return Api_Response
 	 */
 	protected function get_and_cache( $endpoint ) {
+		$http = $this->http;
 		$url = self::BASE_URL . (string) $endpoint;
 
 		try {
 			list( $status, $headers, $body ) = $this->remember(
 				$this->get_cache_key( $url ),
 				$this->get_cache_duration(),
-				function() use ( $url ) {
-					return $this->http->get( $url );
+				function() use ( $http, $url ) {
+					return $http->get( $url );
 				}
 			);
 		} catch ( \RuntimeException $e ) {

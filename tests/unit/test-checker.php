@@ -62,9 +62,7 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			return $package->get_slug();
 		}, $plugins );
 
-		array_walk( $plugins, function( Soter_Core\Package $package ) {
-			$this->assertEquals( 'plugin', $package->get_type() );
-		} );
+		array_walk( $plugins, [ $this, 'assert_package_is_plugin' ] );
 		$this->assertSame( 4, $checker->get_plugin_count() );
 		$this->assertEquals(
 			// @todo Need to revisit single-file plugins - hello.php should be hello-dolly.
@@ -86,9 +84,7 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			return $package->get_slug();
 		}, $themes );
 
-		array_walk( $themes, function( Soter_Core\Package $package ) {
-			$this->assertEquals( 'theme', $package->get_type() );
-		} );
+		array_walk( $themes, [ $this, 'assert_package_is_theme' ] );
 		$this->assertSame( 3, $checker->get_theme_count() );
 		$this->assertEquals(
 			array( 'twentyfifteen', 'twentysixteen', 'twentyseventeen' ),
@@ -110,9 +106,7 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			return $package->get_slug();
 		}, $wordpresses );
 
-		array_walk( $wordpresses, function( Soter_Core\Package $package ) {
-			$this->assertEquals( 'wordpress', $package->get_type() );
-		} );
+		array_walk( $wordpresses, [ $this, 'assert_package_is_wordpress' ] );
 		$this->assertSame( 1, $checker->get_wordpress_count() );
 		$this->assertEquals( array( '474' ), $slugs );
 	}
@@ -153,5 +147,17 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			->getMock();
 
 		return compact( 'twentyfifteen', 'twentysixteen', 'twentyseventeen' );
+	}
+
+	protected function assert_package_is_plugin( Soter_Core\Package $package ) {
+		$this->assertEquals( 'plugin', $package->get_type() );
+	}
+
+	protected function assert_package_is_theme( Soter_Core\Package $package ) {
+		$this->assertEquals( 'theme', $package->get_type() );
+	}
+
+	protected function assert_package_is_wordpress( Soter_Core\Package $package ) {
+		$this->assertEquals( 'wordpress', $package->get_type() );
 	}
 }
