@@ -3,11 +3,9 @@
 use Soter_Core\Api_Response;
 
 class Api_Response_Test extends WP_UnitTestCase {
-	use Gets_Http_Fixtures_Trait;
-
 	/** @test */
 	function it_generates_error_array_for_non_200_responses() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/non-200-response'
 		);
 
@@ -21,7 +19,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_generates_error_array_for_non_json_responses() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/non-json-response'
 		);
 
@@ -35,7 +33,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_generates_error_array_for_invalid_json_responses() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/invalid-json-response'
 		);
 
@@ -49,7 +47,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_generates_proper_data_array_from_a_valid_response() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/api/v2/plugins/contact-form-7'
 		);
 
@@ -67,7 +65,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_provides_access_to_raw_body() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/api/v2/plugins/contact-form-7'
 		);
 
@@ -81,7 +79,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_provides_access_to_raw_data() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/api/v2/plugins/contact-form-7'
 		);
 
@@ -100,7 +98,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_provides_access_to_raw_headers() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/api/v2/plugins/contact-form-7'
 		);
 
@@ -133,7 +131,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_provides_access_to_raw_status() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/api/v2/plugins/contact-form-7'
 		);
 
@@ -144,7 +142,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_provides_access_to_vulnerabilities() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/api/v2/plugins/contact-form-7'
 		);
 
@@ -155,7 +153,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_returns_an_empty_array_when_there_are_no_vulnerabilities() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/non-200-response'
 		);
 
@@ -166,7 +164,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_provides_access_to_vulnerabilities_by_package_version() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/api/v2/plugins/contact-form-7'
 		);
 
@@ -191,7 +189,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_knows_when_there_are_no_vulnerabilities() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/non-200-response'
 		);
 
@@ -202,7 +200,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_knows_when_there_has_been_an_error() {
-		list( $status, $headers, $body ) = static::get_http_fixture_array(
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/non-200-response'
 		);
 

@@ -23,7 +23,7 @@ tests_add_filter( 'muplugins_loaded', '_sc_tests_manually_load_plugin' );
 
 require $_tests_dir . '/includes/bootstrap.php';
 
-require __DIR__ . '/../trait-gets-http-fixtures-trait.php';
+require __DIR__ . '/../functions.php';
 
 require __DIR__ . '/../class-filesystem-http-client.php';
 require __DIR__ . '/../class-null-http-client.php';
