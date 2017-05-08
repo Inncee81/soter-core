@@ -5,7 +5,7 @@ use Soter_Core\WP_Http_Client;
 class WP_Http_Client_Test extends WP_UnitTestCase {
 	/** @test */
 	function it_converts_wp_error_to_exception() {
-		$this->expectException( 'RuntimeException' );
+		$this->setExpectedException( 'RuntimeException' );
 
 		$client = new WP_Http_Client( 'Soter Core Test Suite' );
 		$client->get( 'not://a.real/url' );
