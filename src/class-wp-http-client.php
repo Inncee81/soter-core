@@ -37,19 +37,19 @@ class WP_Http_Client implements Http_Interface {
 	 * @throws \RuntimeException When there is an error.
 	 */
 	public function get( $url ) {
-		$args = [
+		$args = array(
 			'user-agent' => $this->user_agent,
-		];
+		);
 		$response = wp_safe_remote_get( $url, $args );
 
 		if ( is_wp_error( $response ) ) {
 			throw new \RuntimeException( $response->get_error_message() );
 		}
 
-		return [
+		return array(
 			wp_remote_retrieve_response_code( $response ),
 			wp_remote_retrieve_headers( $response )->getAll(),
 			wp_remote_retrieve_body( $response ),
-		];
+		);
 	}
 }

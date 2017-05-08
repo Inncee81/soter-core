@@ -16,19 +16,19 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 
 	/** @test */
 	function it_can_provide_a_list_of_all_installed_packages() {
-		WP_Mock::userFunction( 'get_plugins', [
+		WP_Mock::userFunction( 'get_plugins', array(
 			'return' => static::get_plugins(),
 			'times' => 1,
-		] );
-		WP_Mock::userFunction( 'wp_get_themes', [
+		) );
+		WP_Mock::userFunction( 'wp_get_themes', array(
 			'return' => static::wp_get_themes(),
 			'times' => 1,
-		] );
-		WP_Mock::userFunction( 'get_bloginfo', [
+		) );
+		WP_Mock::userFunction( 'get_bloginfo', array(
 			'args' => 'version',
 			'return' => '4.7.4',
 			'times' => 1,
-		] );
+		) );
 
 		$checker = new Checker( Mockery::mock( 'Soter_Core\\Api_Client' ) );
 		$packages = $checker->get_packages();
@@ -37,7 +37,7 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 		}, $packages );
 
 		$this->assertSame( 8, $checker->get_package_count() );
-		$this->assertEquals( [
+		$this->assertEquals( array(
 			'akismet',
 			'contact-form-7',
 			'debug-bar',
@@ -46,15 +46,15 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			'twentysixteen',
 			'twentyseventeen',
 			'474',
-		], $slugs );
+		), $slugs );
 	}
 
 	/** @test */
 	function it_can_provide_a_list_of_all_installed_plugins() {
-		WP_Mock::userFunction( 'get_plugins', [
+		WP_Mock::userFunction( 'get_plugins', array(
 			'return' => static::get_plugins(),
 			'times' => 1,
-		] );
+		) );
 
 		$checker = new Checker( Mockery::mock( 'Soter_Core\\Api_Client' ) );
 		$plugins = $checker->get_plugins();
@@ -68,17 +68,17 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 		$this->assertSame( 4, $checker->get_plugin_count() );
 		$this->assertEquals(
 			// @todo Need to revisit single-file plugins - hello.php should be hello-dolly.
-			[ 'akismet', 'contact-form-7', 'debug-bar', 'hello.php' ],
+			array( 'akismet', 'contact-form-7', 'debug-bar', 'hello.php' ),
 			$slugs
 		);
 	}
 
 	/** @test */
 	function it_can_provide_a_list_of_all_installed_themes() {
-		WP_Mock::userFunction( 'wp_get_themes', [
+		WP_Mock::userFunction( 'wp_get_themes', array(
 			'return' => static::wp_get_themes(),
 			'times' => 1,
-		] );
+		) );
 
 		$checker = new Checker( Mockery::mock( 'Soter_Core\\Api_Client' ) );
 		$themes = $checker->get_themes();
@@ -91,18 +91,18 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 		} );
 		$this->assertSame( 3, $checker->get_theme_count() );
 		$this->assertEquals(
-			[ 'twentyfifteen', 'twentysixteen', 'twentyseventeen' ],
+			array( 'twentyfifteen', 'twentysixteen', 'twentyseventeen' ),
 			$slugs
 		);
 	}
 
 	/** @test */
 	function it_can_provide_a_list_of_all_installed_wordpress_versions() {
-		WP_Mock::userFunction( 'get_bloginfo', [
+		WP_Mock::userFunction( 'get_bloginfo', array(
 			'args' => 'version',
 			'return' => '4.7.4',
 			'times' => 1,
-		] );
+		) );
 
 		$checker = new Checker( Mockery::mock( 'Soter_Core\\Api_Client' ) );
 		$wordpresses = $checker->get_wordpress();
@@ -114,7 +114,7 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			$this->assertEquals( 'wordpress', $package->get_type() );
 		} );
 		$this->assertSame( 1, $checker->get_wordpress_count() );
-		$this->assertEquals( [ '474' ], $slugs );
+		$this->assertEquals( array( '474' ), $slugs );
 	}
 
 	protected static function get_plugins() {

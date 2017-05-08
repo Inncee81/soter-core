@@ -1,7 +1,7 @@
 <?php
 
-return [
+return array(
 	200,
-	[ 'content-type' => 'text/html; charset=utf-8' ],
+	array( 'content-type' => 'text/html; charset=utf-8' ),
 	'',
-];
+);

@@ -1,7 +1,7 @@
 <?php
 
-return [
-	"akismet/akismet.php" => [
+return array(
+	"akismet/akismet.php" => array(
 		"Name" => "Akismet Anti-Spam",
 		"PluginURI" => "https://akismet.com/",
 		"Version" => "3.3.1",
@@ -13,8 +13,8 @@ return [
 		"Network" => false,
 		"Title" => "Akismet Anti-Spam",
 		"AuthorName" => "Automattic",
-	],
-	"contact-form-7/wp-contact-form-7.php" => [
+	),
+	"contact-form-7/wp-contact-form-7.php" => array(
 		"Name" => "Contact Form 7",
 		"PluginURI" => "http://contactform7.com/",
 		"Version" => "3.7",
@@ -26,8 +26,8 @@ return [
 		"Network" => false,
 		"Title" => "Contact Form 7",
 		"AuthorName" => "Takayuki Miyoshi",
-	],
-	"debug-bar/debug-bar.php" => [
+	),
+	"debug-bar/debug-bar.php" => array(
 		"Name" => "Debug Bar",
 		"PluginURI" => "https://wordpress.org/plugins/debug-bar/",
 		"Version" => "0.8.4",
@@ -39,8 +39,8 @@ return [
 		"Network" => false,
 		"Title" => "Debug Bar",
 		"AuthorName" => "wordpressdotorg",
-	],
-	"hello.php" => [
+	),
+	"hello.php" => array(
 		"Name" => "Hello Dolly",
 		"PluginURI" => "http://wordpress.org/plugins/hello-dolly/",
 		"Version" => "1.6",
@@ -52,5 +52,5 @@ return [
 		"Network" => false,
 		"Title" => "Hello Dolly",
 		"AuthorName" => "Matt Mullenweg",
-	],
-];
+	),
+);

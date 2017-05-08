@@ -25,18 +25,18 @@ class Checker {
 	 *
 	 * @var Package[]
 	 */
-	protected $package_cache = [];
+	protected $package_cache = array();
 
 	/**
 	 * Map of package types to API client methods.
 	 *
 	 * @var string[]
 	 */
-	protected $method_map = [
+	protected $method_map = array(
 		'plugin' => 'plugins',
 		'theme' => 'themes',
 		'wordpress' => 'wordpresses',
-	];
+	);
 
 	/**
 	 * Class constructor.
@@ -82,14 +82,14 @@ class Checker {
 	 *
 	 * @return Api_Package[]
 	 */
-	public function check_packages( array $packages, array $ignored = [] ) {
+	public function check_packages( array $packages, array $ignored = array() ) {
 		if ( ! empty( $ignored ) ) {
 			$packages = array_filter( $packages, function( Package $package ) {
 				return ! in_array( $package->get_slug(), $ignored, true );
 			} );
 		}
 
-		$vulnerabilities = [];
+		$vulnerabilities = array();
 
 		foreach ( $packages as $package ) {
 			$vulnerabilities = array_merge(
@@ -114,7 +114,7 @@ class Checker {
 	 *
 	 * @return Api_Vulnerability[]
 	 */
-	public function check_plugins( array $ignored = [] ) {
+	public function check_plugins( array $ignored = array() ) {
 		return $this->check_packages( $this->get_plugins(), $ignored );
 	}
 
@@ -125,7 +125,7 @@ class Checker {
 	 *
 	 * @return Api_Vulnerability[]
 	 */
-	public function check_site( array $ignored = [] ) {
+	public function check_site( array $ignored = array() ) {
 		return $this->check_packages( $this->get_packages(), $ignored );
 	}
 
@@ -136,7 +136,7 @@ class Checker {
 	 *
 	 * @return Api_Vulnerability[]
 	 */
-	public function check_themes( array $ignored = [] ) {
+	public function check_themes( array $ignored = array() ) {
 		return $this->check_packages( $this->get_themes(), $ignored );
 	}
 
@@ -147,7 +147,7 @@ class Checker {
 	 *
 	 * @return Api_Vulnerability[]
 	 */
-	public function check_wordpress( array $ignored = [] ) {
+	public function check_wordpress( array $ignored = array() ) {
 		return $this->check_packages( $this->get_wordpress(), $ignored );
 	}
 
@@ -199,7 +199,7 @@ class Checker {
 	public function get_plugins() {
 		// Class is being used outside of WordPress.
 		if ( ! defined( 'ABSPATH' ) ) {
-			return [];
+			return array();
 		}
 
 		if ( isset( $this->package_cache['plugins'] ) ) {
@@ -243,7 +243,7 @@ class Checker {
 	public function get_themes() {
 		// Class is being used outside of WordPress.
 		if ( ! function_exists( 'wp_get_themes' ) ) {
-			return [];
+			return array();
 		}
 
 		if ( isset( $this->package_cache['themes'] ) ) {
@@ -280,7 +280,7 @@ class Checker {
 	public function get_wordpress() {
 		// Class is being used outside of WordPress.
 		if ( ! function_exists( 'get_bloginfo' ) ) {
-			return [];
+			return array();
 		}
 
 		if ( isset( $this->package_cache['wordpresses'] ) ) {

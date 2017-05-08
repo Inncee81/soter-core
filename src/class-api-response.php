@@ -115,7 +115,7 @@ class Api_Response {
 	 */
 	public function get_vulnerabilities() {
 		if ( ! $this->has_vulnerabilities() ) {
-			return [];
+			return array();
 		}
 
 		return $this->data['vulnerabilities'];
@@ -134,11 +134,11 @@ class Api_Response {
 		}
 
 		if ( ! $this->has_vulnerabilities() ) {
-			return [];
+			return array();
 		}
 
 		$version = (string) $version;
-		$vulnerabilities = [];
+		$vulnerabilities = array();
 
 		foreach ( $this->data['vulnerabilities'] as $vulnerability ) {
 			if ( $vulnerability->affects_version( $version ) ) {
@@ -226,11 +226,11 @@ class Api_Response {
 		// Consider using status message as default message here?
 		$message = is_null( $message ) ? 'Invalid endpoint' : (string) $message;
 
-		return [
-			'error' => [
+		return array(
+			'error' => array(
 				'code' => $this->status,
 				'message' => $message,
-			],
-		];
+			),
+		);
 	}
 }

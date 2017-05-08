@@ -86,15 +86,16 @@ class Api_Response_Test extends WP_UnitTestCase {
 		);
 
 		$response = new Api_Response( $status, $headers, $body );
+		$data = $response->get_data();
 
-		$this->assertEquals( '4.7', $response->get_data()['latest_version'] );
+		$this->assertEquals( '4.7', $data['latest_version'] );
 		$this->assertEquals(
 			new DateTime( '2017-03-03T19:28:00.000Z' ),
-			$response->get_data()['last_updated']
+			$data['last_updated']
 		);
-		$this->assertTrue( $response->get_data()['popular'] );
-		$this->assertSame( 2, count( $response->get_data()['vulnerabilities'] ) );
-		$this->assertEquals( 'contact-form-7', $response->get_data()['slug'] );
+		$this->assertTrue( $data['popular'] );
+		$this->assertSame( 2, count( $data['vulnerabilities'] ) );
+		$this->assertEquals( 'contact-form-7', $data['slug'] );
 	}
 
 	/** @test */
@@ -106,7 +107,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 		$response = new Api_Response( $status, $headers, $body );
 
 		$this->assertEqualSetsWithIndex(
-			[
+			array(
 				"server" => "Sucuri/Cloudproxy",
 				"date" => "Sat, 06 May 2017 20:12:53 GMT",
 				"content-type" => "application/json; charset=utf-8",
@@ -125,7 +126,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 				"content-encoding" => "gzip",
 				"x-sucuri-cache" => "MISS",
 				"x-sucuri-id" => "11018",
-			],
+			),
 			$response->get_headers()
 		);
 	}
@@ -160,7 +161,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 		$response = new Api_Response( $status, $headers, $body );
 
-		$this->assertSame( [], $response->get_vulnerabilities() );
+		$this->assertSame( array(), $response->get_vulnerabilities() );
 	}
 
 	/** @test */

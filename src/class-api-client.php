@@ -117,7 +117,7 @@ class Api_Client {
 		} catch ( \RuntimeException $e ) {
 			// @todo
 			$status = 418;
-			$headers = [];
+			$headers = array();
 			$body = '';
 		}
 

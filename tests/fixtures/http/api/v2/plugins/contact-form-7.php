@@ -1,8 +1,8 @@
 <?php
 
-return [
+return array(
 	200,
-	[
+	array(
 		"server" => "Sucuri/Cloudproxy",
 		"date" => "Sat, 06 May 2017 20:12:53 GMT",
 		"content-type" => "application/json; charset=utf-8",
@@ -21,6 +21,6 @@ return [
 		"content-encoding" => "gzip",
 		"x-sucuri-cache" => "MISS",
 		"x-sucuri-id" => "11018",
-	],
+	),
 	'{"contact-form-7":{"latest_version":"4.7","last_updated":"2017-03-03T19:28:00.000Z","popular":true,"vulnerabilities":[{"id":7020,"title":"Contact Form 7 <= 3.7.1 - Security Bypass ","created_at":"2014-08-01T10:59:06.000Z","updated_at":"2015-05-15T13:48:25.000Z","published_date":null,"references":{"url":["http://www.securityfocus.com/bid/66381/"],"cve":["2014-2265"]},"vuln_type":"AUTHBYPASS","fixed_in":"3.7.2"},{"id":7022,"title":"Contact Form 7 <= 3.5.2 - File Upload Remote Code Execution","created_at":"2014-08-01T10:59:07.000Z","updated_at":"2015-05-15T13:48:25.000Z","published_date":null,"references":{"url":["http://packetstormsecurity.com/files/124154/"]},"vuln_type":"UPLOAD","fixed_in":"3.5.3"}]}}',
-];
+);

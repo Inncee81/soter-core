@@ -1,7 +1,7 @@
 <?php
 
-return [
+return array(
 	418,
-	[],
+	array(),
 	'',
-];
+);
