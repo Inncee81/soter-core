@@ -25,7 +25,7 @@ class Api_Client {
 	 *
 	 * @var integer
 	 */
-	protected $cache_duration = 60 * 60;
+	protected $cache_duration = 3600;
 
 	/**
 	 * HTTP client.
