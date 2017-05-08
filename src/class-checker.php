@@ -84,9 +84,12 @@ class Checker {
 	 */
 	public function check_packages( array $packages, array $ignored = array() ) {
 		if ( ! empty( $ignored ) ) {
-			$packages = array_filter( $packages, function( Package $package ) {
-				return ! in_array( $package->get_slug(), $ignored, true );
-			} );
+			$packages = array_filter(
+				$packages,
+				function( Package $package ) use ( $ignored ) {
+					return ! in_array( $package->get_slug(), $ignored, true );
+				}
+			);
 		}
 
 		$vulnerabilities = array();

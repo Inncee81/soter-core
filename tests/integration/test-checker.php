@@ -37,6 +37,22 @@ class Checker_Test extends WP_UnitTestCase {
 	}
 
 	/** @test */
+	function it_can_ignore_some_packages_when_checking_many() {
+		$checker = $this->make_checker();
+		$packages = array(
+			new Soter_Core\Package( 'contact-form-7', 'plugin', '3.7' ),
+			new Soter_Core\Package( 'twentyfifteen', 'theme', '1.1' ),
+		);
+
+		$vulns = $checker->check_packages( $packages, array( 'twentyfifteen' ) );
+
+		$this->assertEqualSets(
+			array( 'Contact Form 7 <= 3.7.1 - Security Bypass' ),
+			wp_list_pluck( $vulns, 'title' )
+		);
+	}
+
+	/** @test */
 	function it_only_returns_unique_vulnerabilities() {
 		$checker = $this->make_checker();
 		$packages = array(
