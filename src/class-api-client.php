@@ -107,20 +107,14 @@ class Api_Client implements Client_Interface {
 		$http = $this->http;
 		$url = self::BASE_URL . (string) $endpoint;
 
-		try {
-			list( $status, $headers, $body ) = $this->remember(
-				$this->get_cache_key( $url ),
-				$this->get_cache_duration(),
-				function() use ( $http, $url ) {
-					return $http->get( $url );
-				}
-			);
-		} catch ( \RuntimeException $e ) {
-			// @todo
-			$status = 418;
-			$headers = array();
-			$body = '';
-		}
+		list( $status, $headers, $body ) = $this->remember(
+			$this->get_cache_key( $url ),
+			$this->get_cache_duration(),
+			function() use ( $http, $url ) {
+				// Throws on HTTP error.
+				return $http->get( $url );
+			}
+		);
 
 		return new Api_Response( $status, $headers, $body );
 	}
