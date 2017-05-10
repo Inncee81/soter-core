@@ -129,12 +129,12 @@ class Api_Response implements Response_Interface {
 	 * @return Vulnerability_Interface[]
 	 */
 	public function get_vulnerabilities_by_version( $version = null ) {
-		if ( is_null( $version ) ) {
-			return $this->data['vulnerabilities'];
-		}
-
 		if ( ! $this->has_vulnerabilities() ) {
 			return array();
+		}
+
+		if ( is_null( $version ) ) {
+			return $this->data['vulnerabilities'];
 		}
 
 		$version = (string) $version;
