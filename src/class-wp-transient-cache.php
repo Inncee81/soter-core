@@ -156,11 +156,7 @@ class WP_Transient_Cache implements Cache_Interface {
 	 * @return boolean
 	 */
 	public function put( $key, $value, $seconds = 0 ) {
-		return set_transient(
-			$this->cache_key( $key ),
-			$value,
-			max( 0, intval( $seconds ) )
-		);
+		return set_transient( $this->cache_key( $key ), $value, absint( $seconds ) );
 	}
 
 	/**
