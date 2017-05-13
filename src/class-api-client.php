@@ -141,13 +141,13 @@ class Api_Client implements Client_Interface {
 	 * @return mixed
 	 */
 	protected function remember( $key, $duration, \Closure $callback ) {
-		if ( $this->cache->contains( $key ) ) {
-			return $this->cache->fetch( $key );
+		if ( ! is_null( $this->cache->get( $key ) ) ) {
+			return $this->cache->get( $key );
 		}
 
 		$value = $callback();
 
-		$this->cache->save( $key, $value, $duration );
+		$this->cache->put( $key, $value, $duration );
 
 		return $value;
 	}

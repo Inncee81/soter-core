@@ -1,6 +1,7 @@
 <?php
 
 use Soter_Core\Api_Client;
+use Soter_Core\Null_Cache;
 
 class Api_Client_Test extends WP_UnitTestCase {
 	/** @test */

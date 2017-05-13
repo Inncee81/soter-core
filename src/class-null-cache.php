@@ -1,6 +1,6 @@
 <?php
 /**
- * Cache_Interface interface.
+ * Null_Cache class.
  *
  * @package soter-core
  */
@@ -8,22 +8,26 @@
 namespace Soter_Core;
 
 /**
- * Defines the cache interface.
+ * Defines the null cache class.
  */
-interface Cache_Interface {
+class Null_Cache implements Cache_Interface {
 	/**
 	 * Flush the cache.
 	 *
 	 * @return boolean
 	 */
-	public function flush();
+	public function flush() {
+		return false;
+	}
 
 	/**
 	 * Flush expired entries from the cache.
 	 *
 	 * @return boolean
 	 */
-	public function flush_expired();
+	public function flush_expired() {
+		return false;
+	}
 
 	/**
 	 * Remove an entry from the cache.
@@ -32,7 +36,9 @@ interface Cache_Interface {
 	 *
 	 * @return boolean
 	 */
-	public function forget( $key );
+	public function forget( $key ) {
+		return false;
+	}
 
 	/**
 	 * Get an entry from the cache.
@@ -41,7 +47,9 @@ interface Cache_Interface {
 	 *
 	 * @return mixed       The cached value, null if it is not set.
 	 */
-	public function get( $key );
+	public function get( $key ) {
+		return null;
+	}
 
 	/**
 	 * Put an entry in the cache.
@@ -52,5 +60,7 @@ interface Cache_Interface {
 	 *
 	 * @return boolean
 	 */
-	public function put( $key, $value, $seconds = 0 );
+	public function put( $key, $value, $seconds = 0 ) {
+		return false;
+	}
 }

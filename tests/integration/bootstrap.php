@@ -28,4 +28,3 @@ require __DIR__ . '/../functions.php';
 require __DIR__ . '/../class-filesystem-http-client.php';
 require __DIR__ . '/../class-null-http-client.php';
 require __DIR__ . '/../class-filesystem-cache.php';
-require __DIR__ . '/../class-null-cache.php';
