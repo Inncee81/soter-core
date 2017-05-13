@@ -71,7 +71,7 @@ class Api_Client implements Client_Interface {
 	 * @param integer $seconds Cache duration in seconds.
 	 */
 	public function set_cache_duration( $seconds ) {
-		$this->cache_duration = absint( $seconds );
+		$this->cache_duration = abs( intval( $seconds ) );
 	}
 
 	/**
