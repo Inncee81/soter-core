@@ -61,7 +61,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 		}
 
 		$this->package_cache['plugins'] = array_map(
-			[ $this, 'lock_package_to_soter_package' ],
+			array( $this, 'lock_package_to_soter_package' ),
 			$this->lock->plugin_packages()
 		);
 
@@ -79,7 +79,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 		}
 
 		$this->package_cache['themes'] = array_map(
-			[ $this, 'lock_package_to_soter_package' ],
+			array( $this, 'lock_package_to_soter_package' ),
 			$this->lock->theme_packages()
 		);
 

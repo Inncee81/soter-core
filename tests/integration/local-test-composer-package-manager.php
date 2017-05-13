@@ -28,7 +28,7 @@ class Composer_Package_Manager_Test extends WP_UnitTestCase {
 		$packages = $this->manager->get_packages();
 
 		$this->assertSame( 7, count( $packages ) );
-		array_walk( $packages, [ $this, 'assert_package_instance' ] );
+		array_walk( $packages, array( $this, 'assert_package_instance' ) );
 	}
 
 	/** @test */
@@ -38,7 +38,7 @@ class Composer_Package_Manager_Test extends WP_UnitTestCase {
 		$this->assertSame( 5, count( $plugins ) );
 
 		// Test all for type.
-		array_walk( $plugins, [ $this, 'assert_package_is_plugin' ] );
+		array_walk( $plugins, array( $this, 'assert_package_is_plugin' ) );
 
 		// Spot test slug and version.
 		$this->assertEquals( 'debug-bar', $plugins[0]->get_slug() );

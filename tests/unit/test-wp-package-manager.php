@@ -62,7 +62,7 @@ class WP_Package_Manager_Test extends PHPUnit_Framework_TestCase {
 			return $package->get_slug();
 		}, $plugins );
 
-		array_walk( $plugins, [ $this, 'assert_package_is_plugin' ] );
+		array_walk( $plugins, array( $this, 'assert_package_is_plugin' ) );
 		$this->assertSame( 4, count( $plugins ) );
 		$this->assertEquals(
 			// @todo Need to revisit single-file plugins - hello should be hello-dolly.
@@ -84,7 +84,7 @@ class WP_Package_Manager_Test extends PHPUnit_Framework_TestCase {
 			return $package->get_slug();
 		}, $themes );
 
-		array_walk( $themes, [ $this, 'assert_package_is_theme' ] );
+		array_walk( $themes, array( $this, 'assert_package_is_theme' ) );
 		$this->assertSame( 3, count( $themes ) );
 		$this->assertEquals(
 			array( 'twentyfifteen', 'twentysixteen', 'twentyseventeen' ),
@@ -106,7 +106,7 @@ class WP_Package_Manager_Test extends PHPUnit_Framework_TestCase {
 			return $package->get_slug();
 		}, $wordpresses );
 
-		array_walk( $wordpresses, [ $this, 'assert_package_is_wordpress' ] );
+		array_walk( $wordpresses, array( $this, 'assert_package_is_wordpress' ) );
 		$this->assertSame( 1, count( $wordpresses ) );
 		$this->assertEquals( array( '474' ), $slugs );
 	}
