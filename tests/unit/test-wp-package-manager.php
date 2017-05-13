@@ -1,8 +1,8 @@
 <?php
 
-use Soter_Core\Checker;
+use Soter_Core\WP_Package_Manager;
 
-class Checker_Test extends PHPUnit_Framework_TestCase {
+class WP_Package_Manager_Test extends PHPUnit_Framework_TestCase {
 	function setUp() {
 		WP_Mock::setUp();
 	}
@@ -30,13 +30,13 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			'times' => 1,
 		) );
 
-		$checker = new Checker( Mockery::mock( 'Soter_Core\\Api_Client' ) );
-		$packages = $checker->get_packages();
+		$manager = new WP_Package_Manager;
+		$packages = $manager->get_packages();
 		$slugs = array_map( function( Soter_Core\Package $package ) {
 			return $package->get_slug();
 		}, $packages );
 
-		$this->assertSame( 8, $checker->get_package_count() );
+		$this->assertSame( 8, count( $packages ) );
 		$this->assertEquals( array(
 			'akismet',
 			'contact-form-7',
@@ -56,14 +56,14 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			'times' => 1,
 		) );
 
-		$checker = new Checker( Mockery::mock( 'Soter_Core\\Api_Client' ) );
-		$plugins = $checker->get_plugins();
+		$manager = new WP_Package_Manager;
+		$plugins = $manager->get_plugins();
 		$slugs = array_map( function( Soter_Core\Package $package ) {
 			return $package->get_slug();
 		}, $plugins );
 
 		array_walk( $plugins, [ $this, 'assert_package_is_plugin' ] );
-		$this->assertSame( 4, $checker->get_plugin_count() );
+		$this->assertSame( 4, count( $plugins ) );
 		$this->assertEquals(
 			// @todo Need to revisit single-file plugins - hello should be hello-dolly.
 			array( 'akismet', 'contact-form-7', 'debug-bar', 'hello' ),
@@ -78,14 +78,14 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			'times' => 1,
 		) );
 
-		$checker = new Checker( Mockery::mock( 'Soter_Core\\Api_Client' ) );
-		$themes = $checker->get_themes();
+		$manager = new WP_Package_Manager;
+		$themes = $manager->get_themes();
 		$slugs = array_map( function( Soter_Core\Package $package ) {
 			return $package->get_slug();
 		}, $themes );
 
 		array_walk( $themes, [ $this, 'assert_package_is_theme' ] );
-		$this->assertSame( 3, $checker->get_theme_count() );
+		$this->assertSame( 3, count( $themes ) );
 		$this->assertEquals(
 			array( 'twentyfifteen', 'twentysixteen', 'twentyseventeen' ),
 			$slugs
@@ -100,14 +100,14 @@ class Checker_Test extends PHPUnit_Framework_TestCase {
 			'times' => 1,
 		) );
 
-		$checker = new Checker( Mockery::mock( 'Soter_Core\\Api_Client' ) );
-		$wordpresses = $checker->get_wordpress();
+		$manager = new WP_Package_Manager;
+		$wordpresses = $manager->get_wordpresses();
 		$slugs = array_map( function( Soter_Core\Package $package ) {
 			return $package->get_slug();
 		}, $wordpresses );
 
 		array_walk( $wordpresses, [ $this, 'assert_package_is_wordpress' ] );
-		$this->assertSame( 1, $checker->get_wordpress_count() );
+		$this->assertSame( 1, count( $wordpresses ) );
 		$this->assertEquals( array( '474' ), $slugs );
 	}
 

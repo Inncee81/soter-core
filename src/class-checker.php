@@ -1,6 +1,6 @@
 <?php
 /**
- * Site_Checker class.
+ * Checker class.
  *
  * @package soter-core
  */
@@ -10,7 +10,7 @@ namespace Soter_Core;
 use WP_Theme;
 
 /**
- * Defines the site checker class.
+ * Defines the checker class.
  */
 class Checker implements Checker_Interface {
 	/**
@@ -19,13 +19,6 @@ class Checker implements Checker_Interface {
 	 * @var Client_Interface
 	 */
 	protected $client;
-
-	/**
-	 * Cache of Package instances for all packages installed on site.
-	 *
-	 * @var Package_Interface[]
-	 */
-	protected $package_cache = array();
 
 	/**
 	 * Map of package types to API client methods.
@@ -39,12 +32,24 @@ class Checker implements Checker_Interface {
 	);
 
 	/**
+	 * Package manager instance.
+	 *
+	 * @var Package_Manager_Interface
+	 */
+	protected $package_manager;
+
+	/**
 	 * Class constructor.
 	 *
-	 * @param Client_Interface $client API client instance.
+	 * @param Client_Interface          $client          API client instance.
+	 * @param Package_Manager_Interface $package_manager Package manager instance.
 	 */
-	public function __construct( Client_Interface $client ) {
+	public function __construct(
+		Client_Interface $client,
+		Package_Manager_Interface $package_manager
+	) {
 		$this->client = $client;
+		$this->package_manager = $package_manager;
 	}
 
 	/**
@@ -118,7 +123,10 @@ class Checker implements Checker_Interface {
 	 * @return Vulnerability_Interface[]
 	 */
 	public function check_plugins( array $ignored = array() ) {
-		return $this->check_packages( $this->get_plugins(), $ignored );
+		return $this->check_packages(
+			$this->package_manager->get_plugins(),
+			$ignored
+		);
 	}
 
 	/**
@@ -129,7 +137,10 @@ class Checker implements Checker_Interface {
 	 * @return Vulnerability_Interface[]
 	 */
 	public function check_site( array $ignored = array() ) {
-		return $this->check_packages( $this->get_packages(), $ignored );
+		return $this->check_packages(
+			$this->package_manager->get_packages(),
+			$ignored
+		);
 	}
 
 	/**
@@ -140,7 +151,10 @@ class Checker implements Checker_Interface {
 	 * @return Vulnerability_Interface[]
 	 */
 	public function check_themes( array $ignored = array() ) {
-		return $this->check_packages( $this->get_themes(), $ignored );
+		return $this->check_packages(
+			$this->package_manager->get_themes(),
+			$ignored
+		);
 	}
 
 	/**
@@ -151,7 +165,10 @@ class Checker implements Checker_Interface {
 	 * @return Vulnerability_Interface[]
 	 */
 	public function check_wordpress( array $ignored = array() ) {
-		return $this->check_packages( $this->get_wordpress(), $ignored );
+		return $this->check_packages(
+			$this->package_manager->get_wordpress(),
+			$ignored
+		);
 	}
 
 	/**
@@ -169,20 +186,7 @@ class Checker implements Checker_Interface {
 	 * @return integer
 	 */
 	public function get_package_count() {
-		return count( $this->get_packages() );
-	}
-
-	/**
-	 * Get a list of all installed packages.
-	 *
-	 * @return Package_Interface[]
-	 */
-	public function get_packages() {
-		return array_merge(
-			$this->get_plugins(),
-			$this->get_themes(),
-			$this->get_wordpress()
-		);
+		return count( $this->package_manager->get_packages() );
 	}
 
 	/**
@@ -191,45 +195,7 @@ class Checker implements Checker_Interface {
 	 * @return integer
 	 */
 	public function get_plugin_count() {
-		return count( $this->get_plugins() );
-	}
-
-	/**
-	 * Get a list of all installed plugins.
-	 *
-	 * @return Package_Interface[]
-	 */
-	public function get_plugins() {
-		// Class is being used outside of WordPress.
-		if ( ! defined( 'ABSPATH' ) ) {
-			return array();
-		}
-
-		if ( isset( $this->package_cache['plugins'] ) ) {
-			return $this->package_cache['plugins'];
-		}
-
-		if ( ! function_exists( 'get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		$plugins = get_plugins();
-
-		$this->package_cache['plugins'] = array_map(
-			function( $file, array $plugin ) {
-				if ( false === strpos( $file, '/' ) ) {
-					$slug = basename( $file, '.php' );
-				} else {
-					$slug = dirname( $file );
-				}
-
-				return new Package( $slug, 'plugin', $plugin['Version'] );
-			},
-			array_keys( $plugins ),
-			$plugins
-		);
-
-		return $this->package_cache['plugins'];
+		return count( $this->package_manager->get_plugins() );
 	}
 
 	/**
@@ -238,35 +204,7 @@ class Checker implements Checker_Interface {
 	 * @return integer
 	 */
 	public function get_theme_count() {
-		return count( $this->get_themes() );
-	}
-
-	/**
-	 * Get a list of all installed themes.
-	 *
-	 * @return Package_Interface[]
-	 */
-	public function get_themes() {
-		// Class is being used outside of WordPress.
-		if ( ! function_exists( 'wp_get_themes' ) ) {
-			return array();
-		}
-
-		if ( isset( $this->package_cache['themes'] ) ) {
-			return $this->package_cache['themes'];
-		}
-
-		$themes = array_map( function( WP_Theme $theme ) {
-			return new Package(
-				$theme->get_stylesheet(),
-				'theme',
-				$theme->get( 'Version' )
-			);
-		}, wp_get_themes() );
-
-		$this->package_cache['themes'] = array_values( $themes );
-
-		return $this->package_cache['themes'];
+		return count( $this->package_manager->get_themes() );
 	}
 
 	/**
@@ -275,32 +213,7 @@ class Checker implements Checker_Interface {
 	 * @return integer
 	 */
 	public function get_wordpress_count() {
-		return count( $this->get_wordpress() );
-	}
-
-	/**
-	 * Get a list of all installed WordPress versions (should only have 1 item).
-	 *
-	 * @return Package_Interface[]
-	 */
-	public function get_wordpress() {
-		// Class is being used outside of WordPress.
-		if ( ! function_exists( 'get_bloginfo' ) ) {
-			return array();
-		}
-
-		if ( isset( $this->package_cache['wordpresses'] ) ) {
-			return $this->package_cache['wordpresses'];
-		}
-
-		$version = get_bloginfo( 'version' );
-		$slug = str_replace( '.', '', $version );
-
-		$this->package_cache['wordpresses'] = array(
-			new Package( $slug, 'wordpress', $version ),
-		);
-
-		return $this->package_cache['wordpresses'];
+		return count( $this->package_manager->get_wordpress() );
 	}
 
 	/**

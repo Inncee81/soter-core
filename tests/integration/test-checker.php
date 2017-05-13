@@ -4,6 +4,7 @@ use Soter_Core\Checker;
 use Soter_Core\Package;
 use Soter_Core\Api_Client;
 use Soter_Core\Null_Cache;
+use Soter_Core\WP_Package_Manager;
 
 class Checker_Test extends WP_UnitTestCase {
 	/** @test */
@@ -108,7 +109,8 @@ class Checker_Test extends WP_UnitTestCase {
 		$http = new Filesystem_Http_Client;
 		$cache = new Null_Cache;
 		$client = new Api_Client( $http, $cache );
+		$manager = new WP_Package_Manager;
 
-		return new Checker( $client );
+		return new Checker( $client, $manager );
 	}
 }
