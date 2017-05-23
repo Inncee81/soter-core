@@ -14,20 +14,6 @@ class Api_Client implements Client_Interface {
 	const BASE_URL = 'https://wpvulndb.com/api/v2/';
 
 	/**
-	 * Cache provider.
-	 *
-	 * @var  Cache_Interface
-	 */
-	protected $cache;
-
-	/**
-	 * Cache duration in seconds.
-	 *
-	 * @var integer
-	 */
-	protected $cache_duration = 3600;
-
-	/**
 	 * HTTP client.
 	 *
 	 * @var  Http_Interface
@@ -38,20 +24,9 @@ class Api_Client implements Client_Interface {
 	 * Class constructor.
 	 *
 	 * @param Http_Interface  $http  HTTP instance.
-	 * @param Cache_Interface $cache Cache instance.
 	 */
-	public function __construct( Http_Interface $http, Cache_Interface $cache ) {
+	public function __construct( Http_Interface $http ) {
 		$this->http = $http;
-		$this->cache = $cache;
-	}
-
-	/**
-	 * Cache duration getter.
-	 *
-	 * @return integer
-	 */
-	public function get_cache_duration() {
-		return $this->cache_duration;
 	}
 
 	/**
@@ -62,16 +37,7 @@ class Api_Client implements Client_Interface {
 	 * @return Response_Interface
 	 */
 	public function plugins( $slug ) {
-		return $this->get_and_cache( 'plugins/' . $slug );
-	}
-
-	/**
-	 * Cache duration setter.
-	 *
-	 * @param integer $seconds Cache duration in seconds.
-	 */
-	public function set_cache_duration( $seconds ) {
-		$this->cache_duration = abs( intval( $seconds ) );
+		return $this->get( 'plugins/' . $slug );
 	}
 
 	/**
@@ -82,7 +48,7 @@ class Api_Client implements Client_Interface {
 	 * @return Response_Interface
 	 */
 	public function themes( $slug ) {
-		return $this->get_and_cache( 'themes/' . $slug );
+		return $this->get( 'themes/' . $slug );
 	}
 
 	/**
@@ -93,62 +59,21 @@ class Api_Client implements Client_Interface {
 	 * @return Response_Interface
 	 */
 	public function wordpresses( $slug ) {
-		return $this->get_and_cache( 'wordpresses/' . $slug );
+		return $this->get( 'wordpresses/' . $slug );
 	}
 
 	/**
-	 * Retrieve response from cache if it exists otherwise make a GET request.
+	 * Make a get request against the given endpoint.
 	 *
 	 * @param  string $endpoint API endpoint.
 	 *
 	 * @return Response_Interface
 	 */
-	protected function get_and_cache( $endpoint ) {
-		$http = $this->http;
+	protected function get( $endpoint ) {
 		$url = self::BASE_URL . (string) $endpoint;
 
-		list( $status, $headers, $body ) = $this->remember(
-			$this->get_cache_key( $url ),
-			$this->get_cache_duration(),
-			function() use ( $http, $url ) {
-				// Throws on HTTP error.
-				return $http->get( $url );
-			}
-		);
+		list( $status, $headers, $body ) = $this->http->get( $url );
 
 		return new Api_Response( $status, $headers, $body );
-	}
-
-	/**
-	 * Get the cache key for a given request.
-	 *
-	 * @param  string $url API $url request is being made against.
-	 *
-	 * @return string
-	 */
-	protected function get_cache_key( $url ) {
-		return 'api_response_' . $url;
-	}
-
-	/**
-	 * Returns a value from the cache if it exists, otherwise sets it to the value
-	 * returned from the provided callback.
-	 *
-	 * @param  string   $key      Cache key.
-	 * @param  integer  $duration Cache duration in seconds.
-	 * @param  \Closure $callback Callback used to generate value for caching.
-	 *
-	 * @return mixed
-	 */
-	protected function remember( $key, $duration, \Closure $callback ) {
-		if ( ! is_null( $this->cache->get( $key ) ) ) {
-			return $this->cache->get( $key );
-		}
-
-		$value = $callback();
-
-		$this->cache->put( $key, $value, $duration );
-
-		return $value;
 	}
 }

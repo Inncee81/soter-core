@@ -14,6 +14,8 @@ class Checker_Test extends WP_UnitTestCase {
 
 		$vulns = $checker->check_package( $package );
 
+		// @todo Verify package check action is triggered.
+
 		$this->assertEqualSets(
 			array(
 				'Contact Form 7 <= 3.7.1 - Security Bypass',
@@ -32,6 +34,8 @@ class Checker_Test extends WP_UnitTestCase {
 		);
 
 		$vulns = $checker->check_packages( $packages );
+
+		// @todo Verify packages check action is triggered.
 
 		$this->assertEqualSets(
 			array(
@@ -107,8 +111,7 @@ class Checker_Test extends WP_UnitTestCase {
 
 	protected function make_checker() {
 		$http = new Filesystem_Http_Client;
-		$cache = new Null_Cache;
-		$client = new Api_Client( $http, $cache );
+		$client = new Api_Client( $http );
 		$manager = new WP_Package_Manager;
 
 		return new Checker( $client, $manager );

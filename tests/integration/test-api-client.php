@@ -5,25 +5,9 @@ use Soter_Core\Null_Cache;
 
 class Api_Client_Test extends WP_UnitTestCase {
 	/** @test */
-	function it_provides_access_to_cache_duration() {
-		$http = new Filesystem_Http_Client;
-		$cache = new Null_Cache;
-
-		$client = new Api_Client( $http, $cache );
-
-		$this->assertSame( 3600, $client->get_cache_duration() );
-
-		$client->set_cache_duration( 60 );
-
-		$this->assertSame( 60, $client->get_cache_duration() );
-	}
-
-	/** @test */
 	function it_can_make_requests_to_the_plugins_endpoint() {
 		$http = new Filesystem_Http_Client;
-		$cache = new Null_Cache;
-
-		$client = new Api_Client( $http, $cache );
+		$client = new Api_Client( $http );
 
 		$response = $client->plugins( 'contact-form-7' );
 
@@ -37,9 +21,7 @@ class Api_Client_Test extends WP_UnitTestCase {
 	/** @test */
 	function it_can_make_requests_to_the_themes_endpoint() {
 		$http = new Filesystem_Http_Client;
-		$cache = new Null_Cache;
-
-		$client = new Api_Client( $http, $cache );
+		$client = new Api_Client( $http );
 
 		$response = $client->themes( 'twentyfifteen' );
 
@@ -53,25 +35,7 @@ class Api_Client_Test extends WP_UnitTestCase {
 	/** @test */
 	function it_can_make_requests_to_the_wordpresses_endpoint() {
 		$http = new Filesystem_Http_Client;
-		$cache = new Null_Cache;
-
-		$client = new Api_Client( $http, $cache );
-
-		$response = $client->wordpresses( '474' );
-
-		$this->assertInstanceOf( 'Soter_Core\\Api_Response', $response );
-		$this->assertEquals(
-			'{"4.7.4":{"release_date":"2017-04-20","changelog_url":"https://codex.wordpress.org/Version_4.7.4","vulnerabilities":[{"id":8807,"title":"WordPress 2.3-4.7.4 - Host Header Injection in Password Reset","created_at":"2017-05-05T09:47:44.000Z","updated_at":"2017-05-05T09:48:40.000Z","published_date":"2017-05-03T00:00:00.000Z","references":{"url":["https://exploitbox.io/vuln/WordPress-Exploit-4-7-Unauth-Password-Reset-0day-CVE-2017-8295.html","http://blog.dewhurstsecurity.com/2017/05/04/exploitbox-wordpress-security-advisories.html"],"cve":["2017-8295"]},"vuln_type":"UNKNOWN","fixed_in":null}]}}',
-			$response->get_body()
-		);
-	}
-
-	/** @test */
-	function it_checks_the_cache_before_making_http_requests() {
-		$http = new Null_Http_Client;
-		$cache = new Filesystem_Cache;
-
-		$client = new Api_Client( $http, $cache );
+		$client = new Api_Client( $http );
 
 		$response = $client->wordpresses( '474' );
 
