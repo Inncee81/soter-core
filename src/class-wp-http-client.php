@@ -37,6 +37,7 @@ class WP_Http_Client implements Http_Interface {
 	 * @throws \RuntimeException When there is an error.
 	 */
 	public function get( $url ) {
+		$url = (string) $url;
 		$args = array(
 			'user-agent' => $this->user_agent,
 		);

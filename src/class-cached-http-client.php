@@ -44,6 +44,7 @@ class Cached_Http_Client implements Http_Interface {
 	 * @return array
 	 */
 	public function get( $url ) {
+		$url = (string) $url;
 		$key = "soter_core:http:get:{$url}";
 
 		$value = $this->cache->get( $key );
