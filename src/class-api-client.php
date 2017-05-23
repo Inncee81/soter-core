@@ -23,7 +23,7 @@ class Api_Client implements Client_Interface {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Http_Interface  $http  HTTP instance.
+	 * @param Http_Interface $http  HTTP instance.
 	 */
 	public function __construct( Http_Interface $http ) {
 		$this->http = $http;
