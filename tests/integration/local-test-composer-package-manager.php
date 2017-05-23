@@ -14,12 +14,16 @@ class Composer_Package_Manager_Test extends WP_UnitTestCase {
 	protected $manager;
 
 	function setUp() {
+		parent::setUp();
+
 		$this->manager = new Composer_Package_Manager(
 			new Lock( __DIR__ . '/../fixtures/test-composer.lock' )
 		);
 	}
 
 	function tearDown() {
+		parent::tearDown();
+
 		$this->manager = null;
 	}
 
