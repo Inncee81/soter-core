@@ -28,18 +28,18 @@ class WP_Transient_Cache_Test extends WP_UnitTestCase {
 		set_transient( 'alt2', 'another2', 120 );
 
 		// Sanity.
-		foreach ( [ 'key2', 'alt2' ] as $key ) {
+		foreach ( array( 'key2', 'alt2' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 		}
 
-		foreach ( [ 'key2', 'alt2' ] as $key ) {
+		foreach ( array( 'key2', 'alt2' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 			$this->assertNotFalse( get_option( "_transient_timeout_{$key}" ) );
 		}
 
 		$cache->flush();
 
-		foreach ( [ 'key1', 'key2', 'alt1', 'alt2' ] as $key ) {
+		foreach ( array( 'key1', 'key2', 'alt1', 'alt2' ) as $key ) {
 			$this->assertFalse( get_option( "_transient_{$key}" ) );
 			$this->assertFalse( get_option( "_transient_timeout_{$key}" ) );
 		}
@@ -56,18 +56,18 @@ class WP_Transient_Cache_Test extends WP_UnitTestCase {
 		set_transient( 'alt2', 'another2', 120 );
 
 		// Sanity.
-		foreach ( [ 'pfx_key1', 'alt1' ] as $key ) {
+		foreach ( array( 'pfx_key1', 'alt1' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 		}
 
-		foreach ( [ 'pfx_key2', 'alt2' ] as $key ) {
+		foreach ( array( 'pfx_key2', 'alt2' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 			$this->assertNotFalse( get_option( "_transient_timeout_{$key}" ) );
 		}
 
 		$cache->flush();
 
-		foreach ( [ 'key1', 'key2' ] as $key ) {
+		foreach ( array( 'key1', 'key2' ) as $key ) {
 			$this->assertFalse( get_option( "_transient_{$key}" ) );
 			$this->assertFalse( get_option( "_transient_timeout_{$key}" ) );
 		}
@@ -88,11 +88,11 @@ class WP_Transient_Cache_Test extends WP_UnitTestCase {
 		set_transient( 'alt2', 'another2', 1 );
 
 		// Sanity.
-		foreach ( [ 'key1', 'alt1' ] as $key ) {
+		foreach ( array( 'key1', 'alt1' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 		}
 
-		foreach ( [ 'key2', 'alt2' ] as $key ) {
+		foreach ( array( 'key2', 'alt2' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 			$this->assertNotFalse( get_option( "_transient_timeout_{$key}" ) );
 		}
@@ -101,11 +101,11 @@ class WP_Transient_Cache_Test extends WP_UnitTestCase {
 
 		$cache->flush_expired();
 
-		foreach ( [ 'key1', 'alt1' ] as $key ) {
+		foreach ( array( 'key1', 'alt1' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 		}
 
-		foreach ( [ 'key2', 'alt2' ] as $key ) {
+		foreach ( array( 'key2', 'alt2' ) as $key ) {
 			$this->assertFalse( get_option( "_transient_{$key}" ) );
 			$this->assertFalse( get_option( "_transient_timeout_{$key}" ) );
 		}
@@ -122,11 +122,11 @@ class WP_Transient_Cache_Test extends WP_UnitTestCase {
 		set_transient( 'alt2', 'another2', 1 );
 
 		// Sanity.
-		foreach ( [ 'pfx_key1', 'alt1' ] as $key ) {
+		foreach ( array( 'pfx_key1', 'alt1' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 		}
 
-		foreach ( [ 'pfx_key2', 'alt2' ] as $key ) {
+		foreach ( array( 'pfx_key2', 'alt2' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 			$this->assertNotFalse( get_option( "_transient_timeout_{$key}" ) );
 		}
@@ -135,7 +135,7 @@ class WP_Transient_Cache_Test extends WP_UnitTestCase {
 
 		$cache->flush_expired();
 
-		foreach ( [ 'pfx_key1', 'alt1', 'alt2' ] as $key ) {
+		foreach ( array( 'pfx_key1', 'alt1', 'alt2' ) as $key ) {
 			$this->assertNotFalse( get_option( "_transient_{$key}" ) );
 		}
 
