@@ -166,7 +166,7 @@ class Checker implements Checker_Interface {
 	 */
 	public function check_wordpress( array $ignored = array() ) {
 		return $this->check_packages(
-			$this->package_manager->get_wordpress(),
+			$this->package_manager->get_wordpresses(),
 			$ignored
 		);
 	}
@@ -213,7 +213,7 @@ class Checker implements Checker_Interface {
 	 * @return integer
 	 */
 	public function get_wordpress_count() {
-		return count( $this->package_manager->get_wordpress() );
+		return count( $this->package_manager->get_wordpresses() );
 	}
 
 	/**
