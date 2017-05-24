@@ -5,7 +5,7 @@ use Soter_Core\WP_Transient_Cache;
 class WP_Transient_Cache_Test extends WP_UnitTestCase {
 	/** @test */
 	function it_throws_for_prefix_greater_than_131_characters() {
-		$this->expectException( 'InvalidArgumentException' );
+		$this->setExpectedException( 'InvalidArgumentException' );
 
 		$cache = new WP_Transient_Cache( $GLOBALS['wpdb'], str_repeat( 'a', 132 ) );
 	}
