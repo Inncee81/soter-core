@@ -46,11 +46,11 @@ interface Cache_Interface {
 	/**
 	 * Put an entry in the cache.
 	 *
-	 * @param  string  $key     The cache key.
-	 * @param  mixed   $value   The cache value.
-	 * @param  integer $seconds Time to cache expiration in seconds.
+	 * @param  string       $key      The cache key.
+	 * @param  mixed        $value    The cache value.
+	 * @param  null|integer $lifetime Time to cache expiration in seconds.
 	 *
 	 * @return boolean
 	 */
-	public function put( $key, $value, $seconds = 0 );
+	public function put( $key, $value, $lifetime = null );
 }

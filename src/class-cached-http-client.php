@@ -55,7 +55,6 @@ class Cached_Http_Client implements Http_Interface {
 
 		$value = $this->http->get( $url );
 
-		// @todo
 		$this->cache->put( $key, $value );
 
 		return $value;

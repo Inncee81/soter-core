@@ -13,12 +13,21 @@ use wpdb;
  * Defines the WP transient cache class.
  */
 class WP_Transient_Cache implements Cache_Interface {
+	const MAX_KEY_LENGTH = 172;
+
 	/**
 	 * WordPress database instance.
 	 *
 	 * @var wpdb
 	 */
 	protected $db;
+
+	/**
+	 * Default cache entry lifetime.
+	 *
+	 * @var integer
+	 */
+	protected $default_lifetime;
 
 	/**
 	 * Cache prefix.
@@ -32,18 +41,26 @@ class WP_Transient_Cache implements Cache_Interface {
 	 *
 	 * Requires WP >= 4.4 for transient key length of 172 characters.
 	 *
-	 * @param wpdb   $db     WordPress database instance.
-	 * @param string $prefix Cache prefix string.
+	 * @param wpdb         $db               WordPress database instance.
+	 * @param string       $prefix           Cache prefix string.
+	 * @param null|integer $default_lifetime Default cache entry lifetime.
+	 *
+	 * @throws \InvalidArgumentException When length of $prefix exceeds max allowed.
 	 */
-	public function __construct( wpdb $db, $prefix = '' ) {
-		$this->db = $db;
-
-		// SHA1 plus "_" take 41 characters which leaves us with 131 for our prefix.
-		if ( 131 < strlen( $prefix ) ) {
-			$prefix = substr( $prefix, 0, 131 );
+	public function __construct( wpdb $db, $prefix = '', $default_lifetime = null ) {
+		// 40 for length of sha1, additional 1 for "_" separator.
+		if ( self::MAX_KEY_LENGTH - 40 - 1 < strlen( $prefix ) ) {
+			throw new \InvalidArgumentException( sprintf(
+				'Provided prefix [%s, length of %s] exceeds maximum length of %s',
+				$prefix,
+				strlen( $prefix ),
+				self::MAX_KEY_LENGTH
+			) );
 		}
 
-		$this->prefix = $prefix;
+		$this->db = $db;
+		$this->prefix = (string) $prefix;
+		$this->default_lifetime = max( 0, intval( $default_lifetime ) );
 	}
 
 	/**
@@ -59,14 +76,22 @@ class WP_Transient_Cache implements Cache_Interface {
 		}
 
 		$sql = "DELETE FROM {$this->db->options}
-			WHERE option_name LIKE %s";
+			WHERE option_name LIKE %s
+			OR option_name LIKE %s";
 
-		$count = $this->db->query( $this->db->prepare(
-			$sql,
-			$this->db->esc_like( "_transient_{$this->cache_prefix()}" ) . '%'
-		) );
+		$prefix = $this->cache_prefix();
+		$option = $this->db->esc_like( "_transient_{$prefix}" ) . '%';
+		$timeout = $this->db->esc_like( "_transient_timeout_{$prefix}" ) . '%';
 
-		return (bool) $count;
+		$count = $this->db->query( $this->db->prepare( $sql, $option, $timeout ) );
+
+		if ( false === $count ) {
+			return false;
+		}
+
+		wp_cache_flush();
+
+		return true;
 	}
 
 	/**
@@ -82,9 +107,10 @@ class WP_Transient_Cache implements Cache_Interface {
 		}
 
 		$now = time();
-		$transient_prefix = "_transient_{$this->cache_prefix()}";
-		$timeout_prefix = "_transient_timeout_{$this->cache_prefix()}";
-		$length = strlen( $transient_prefix ) + 1;
+		$prefix = $this->cache_prefix();
+		$option = "_transient_{$prefix}";
+		$timeout = "_transient_timeout_{$prefix}";
+		$length = strlen( $option ) + 1;
 
 		$sql = "DELETE a, b FROM {$this->db->options} a, {$this->db->options} b
 			WHERE a.option_name LIKE %s
@@ -94,14 +120,20 @@ class WP_Transient_Cache implements Cache_Interface {
 
 		$count = $this->db->query( $this->db->prepare(
 			$sql,
-			$this->db->esc_like( $transient_prefix ) . '%',
-			$this->db->esc_like( $timeout_prefix ) . '%',
-			$timeout_prefix,
+			$this->db->esc_like( $option ) . '%',
+			$this->db->esc_like( $timeout ) . '%',
+			$timeout,
 			$length,
 			$now
 		) );
 
-		return (bool) $count;
+		if ( false === $count ) {
+			return false;
+		}
+
+		wp_cache_flush();
+
+		return true;
 	}
 
 	/**
@@ -112,7 +144,7 @@ class WP_Transient_Cache implements Cache_Interface {
 	 * @return boolean
 	 */
 	public function forget( $key ) {
-		return delete_transient( $this->cache_key( $key ) );
+		return delete_transient( $this->item_key( $key ) );
 	}
 
 	/**
@@ -123,7 +155,7 @@ class WP_Transient_Cache implements Cache_Interface {
 	 * @return mixed       The cached value, null if it is not set.
 	 */
 	public function get( $key ) {
-		$value = get_transient( $this->cache_key( $key ) );
+		$value = get_transient( $this->item_key( $key ) );
 
 		return false === $value ? null : $value;
 	}
@@ -138,6 +170,15 @@ class WP_Transient_Cache implements Cache_Interface {
 	}
 
 	/**
+	 * Get the default cache entry lifetime.
+	 *
+	 * @return integer
+	 */
+	public function get_default_lifetime() {
+		return $this->default_lifetime;
+	}
+
+	/**
 	 * Get the raw cache prefix.
 	 *
 	 * @return string
@@ -149,14 +190,24 @@ class WP_Transient_Cache implements Cache_Interface {
 	/**
 	 * Put an entry in the cache.
 	 *
-	 * @param  string  $key     The cache key.
-	 * @param  mixed   $value   The cache value.
-	 * @param  integer $seconds Time to cache expiration in seconds.
+	 * @param  string       $key      The cache key.
+	 * @param  mixed        $value    The cache value.
+	 * @param  null|integer $lifetime Time to cache expiration in seconds.
 	 *
 	 * @return boolean
 	 */
-	public function put( $key, $value, $seconds = 0 ) {
-		return set_transient( $this->cache_key( $key ), $value, absint( $seconds ) );
+	public function put( $key, $value, $lifetime = null ) {
+		if ( is_null( $value ) || 0 === $lifetime ) {
+			return $this->forget( $key );
+		}
+
+		$lifetime = $this->item_lifetime( $lifetime );
+
+		if ( 0 > $lifetime ) {
+			return $this->forget( $key );
+		}
+
+		return set_transient( $this->item_key( $key ), $value, $lifetime );
 	}
 
 	/**
@@ -165,9 +216,43 @@ class WP_Transient_Cache implements Cache_Interface {
 	 * @param  string $key The user defined cache key.
 	 *
 	 * @return string
+	 *
+	 * @throws \InvalidArgumentException When length of $key is 0.
 	 */
-	protected function cache_key( $key ) {
-		return $this->cache_prefix() . hash( 'sha1', strval( $key ) );
+	protected function item_key( $key ) {
+		$key = (string) $key;
+
+		if ( ! isset( $key[0] ) ) {
+			throw new \InvalidArgumentException(
+				'Cache key length must be greater than zero'
+			);
+		}
+
+		$prefix = $this->cache_prefix();
+		$new_key = $prefix . $key;
+
+		if ( strlen( $new_key ) <= self::MAX_KEY_LENGTH ) {
+			return $new_key;
+		}
+
+		return $prefix . hash( 'sha1', $key );
+	}
+
+	/**
+	 * Generate the actual cache lifetime.
+	 *
+	 * @param  null|integer $lifetime The cache lifetime.
+	 *
+	 * @return integer
+	 */
+	protected function item_lifetime( $lifetime ) {
+		if ( is_null( $lifetime ) ) {
+			return $this->default_lifetime;
+		}
+
+		$lifetime = intval( $lifetime );
+
+		return 0 < $lifetime ? $lifetime : -1;
 	}
 
 	/**
