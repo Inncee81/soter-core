@@ -1,6 +1,6 @@
 {
   "name": "ssnepenthe/soter-core",
-  "description": "@todo",
+  "description": "A very basic library for interacting with the WPScan Vulnerability Database API.",
   "type": "library",
   "homepage": "https://github.com/ssnepenthe/soter-core",
   "license": "GPL-2.0",
