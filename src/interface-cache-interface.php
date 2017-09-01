@@ -12,29 +12,6 @@ namespace Soter_Core;
  */
 interface Cache_Interface {
 	/**
-	 * Flush the cache.
-	 *
-	 * @return boolean
-	 */
-	public function flush();
-
-	/**
-	 * Flush expired entries from the cache.
-	 *
-	 * @return boolean
-	 */
-	public function flush_expired();
-
-	/**
-	 * Remove an entry from the cache.
-	 *
-	 * @param  string $key The cache key.
-	 *
-	 * @return boolean
-	 */
-	public function forget( $key );
-
-	/**
 	 * Get an entry from the cache.
 	 *
 	 * @param  string $key The cache key.

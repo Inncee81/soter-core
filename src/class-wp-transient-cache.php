@@ -16,13 +16,6 @@ class WP_Transient_Cache implements Cache_Interface {
 	const MAX_KEY_LENGTH = 172;
 
 	/**
-	 * WordPress database instance.
-	 *
-	 * @var wpdb
-	 */
-	protected $db;
-
-	/**
 	 * Default cache entry lifetime.
 	 *
 	 * @var integer
@@ -47,7 +40,7 @@ class WP_Transient_Cache implements Cache_Interface {
 	 *
 	 * @throws \InvalidArgumentException When length of $prefix exceeds max allowed.
 	 */
-	public function __construct( wpdb $db, $prefix = '', $default_lifetime = null ) {
+	public function __construct( $prefix = '', $default_lifetime = null ) {
 		// 40 for length of sha1, additional 1 for "_" separator.
 		if ( self::MAX_KEY_LENGTH - 40 - 1 < strlen( $prefix ) ) {
 			throw new \InvalidArgumentException( sprintf(
@@ -58,82 +51,8 @@ class WP_Transient_Cache implements Cache_Interface {
 			) );
 		}
 
-		$this->db = $db;
 		$this->prefix = (string) $prefix;
 		$this->default_lifetime = max( 0, intval( $default_lifetime ) );
-	}
-
-	/**
-	 * Flush the cache.
-	 *
-	 * Fails automatically when site is using external object cache.
-	 *
-	 * @return boolean
-	 */
-	public function flush() {
-		if ( wp_using_ext_object_cache() ) {
-			return false;
-		}
-
-		$sql = "DELETE FROM {$this->db->options}
-			WHERE option_name LIKE %s
-			OR option_name LIKE %s";
-
-		$prefix = $this->cache_prefix();
-		$option = $this->db->esc_like( "_transient_{$prefix}" ) . '%';
-		$timeout = $this->db->esc_like( "_transient_timeout_{$prefix}" ) . '%';
-
-		$count = $this->db->query( $this->db->prepare( $sql, $option, $timeout ) );
-
-		if ( false === $count ) {
-			return false;
-		}
-
-		wp_cache_flush();
-
-		return true;
-	}
-
-	/**
-	 * Flush expired entries from the cache.
-	 *
-	 * Fails automatically when site is using external object cache.
-	 *
-	 * @return boolean
-	 */
-	public function flush_expired() {
-		if ( wp_using_ext_object_cache() ) {
-			return false;
-		}
-
-		$now = time();
-		$prefix = $this->cache_prefix();
-		$option = "_transient_{$prefix}";
-		$timeout = "_transient_timeout_{$prefix}";
-		$length = strlen( $option ) + 1;
-
-		$sql = "DELETE a, b FROM {$this->db->options} a, {$this->db->options} b
-			WHERE a.option_name LIKE %s
-			AND a.option_name NOT LIKE %s
-			AND b.option_name = CONCAT( %s, SUBSTRING( a.option_name, %d ) )
-			AND b.option_value < %d";
-
-		$count = $this->db->query( $this->db->prepare(
-			$sql,
-			$this->db->esc_like( $option ) . '%',
-			$this->db->esc_like( $timeout ) . '%',
-			$timeout,
-			$length,
-			$now
-		) );
-
-		if ( false === $count ) {
-			return false;
-		}
-
-		wp_cache_flush();
-
-		return true;
 	}
 
 	/**
@@ -158,15 +77,6 @@ class WP_Transient_Cache implements Cache_Interface {
 		$value = get_transient( $this->item_key( $key ) );
 
 		return false === $value ? null : $value;
-	}
-
-	/**
-	 * Get the WordPress database instance.
-	 *
-	 * @return wpdb
-	 */
-	public function get_db() {
-		return $this->db;
 	}
 
 	/**
