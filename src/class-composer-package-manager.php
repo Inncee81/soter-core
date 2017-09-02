@@ -61,7 +61,11 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 		}
 
 		$this->package_cache['plugins'] = array_map(
-			array( $this, 'lock_package_to_soter_package' ),
+			function( LockPackage $plugin ) {
+				list( $_, $slug ) = explode( '/', $plugin->name() );
+
+				return new Package( $slug, Package::TYPE_PLUGIN, $plugin->version() );
+			},
 			$this->lock->plugin_packages()
 		);
 
@@ -79,7 +83,11 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 		}
 
 		$this->package_cache['themes'] = array_map(
-			array( $this, 'lock_package_to_soter_package' ),
+			function( LockPackage $theme ) {
+				list( $_, $slug ) = explode( '/', $theme->name() );
+
+				return new Package( $slug, Package::TYPE_THEME, $theme->version() );
+			},
 			$this->lock->theme_packages()
 		);
 
@@ -100,25 +108,11 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 			function( LockPackage $wordpress ) {
 				$slug = str_replace( '.', '', $wordpress->version() );
 
-				return new Package( $slug, 'wordpress', $wordpress->version() );
+				return new Package( $slug, Package::TYPE_WORDPRESS, $wordpress->version() );
 			},
 			$this->lock->core_packages()
 		);
 
 		return $this->package_cache['wordpresses'];
-	}
-
-	/**
-	 * Convert a lock package instance to a Soter package instance.
-	 *
-	 * @param  LockPackage $package Lock package instance.
-	 *
-	 * @return Package
-	 */
-	protected function lock_package_to_soter_package( LockPackage $package ) {
-		list( $_, $slug ) = explode( '/', $package->name() );
-		$type = str_replace( 'wordpress-', '', $package->type() );
-
-		return new Package( $slug, $type, $package->version() );
 	}
 }

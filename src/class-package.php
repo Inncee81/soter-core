@@ -7,6 +7,8 @@
 
 namespace Soter_Core;
 
+use WP_Theme;
+
 /**
  * Defines the package class.
  *
@@ -14,6 +16,10 @@ namespace Soter_Core;
  * normalization between themes, plugins and WordPress core.
  */
 class Package implements Package_Interface {
+	const TYPE_PLUGIN = 'plugin';
+	const TYPE_THEME = 'theme';
+	const TYPE_WORDPRESS = 'wordpress';
+
 	/**
 	 * Package slug.
 	 *
@@ -73,5 +79,26 @@ class Package implements Package_Interface {
 	 */
 	public function get_version() {
 		return $this->version;
+	}
+
+	public static function from_plugin_array( string $file, array $headers ) {
+		if ( false === strpos( $file, '/' ) ) {
+			$slug = basename( $file, '.php' );
+		} else {
+			$slug = dirname( $file );
+		}
+
+		return new static( $slug, static::TYPE_PLUGIN, $headers['Version'] );
+	}
+
+	public static function from_theme_object( WP_Theme $theme ) {
+		return new static( $theme->get_stylesheet(), static::TYPE_THEME, $theme->get( 'Version' ) );
+	}
+
+	public static function from_wordpress_env() {
+		$version = get_bloginfo( 'version' );
+		$slug = str_replace( '.', '', $version );
+
+		return new static( $slug, static::TYPE_WORDPRESS, $version );
 	}
 }

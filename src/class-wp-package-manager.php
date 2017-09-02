@@ -7,8 +7,6 @@
 
 namespace Soter_Core;
 
-use WP_Theme;
-
 /**
  * Defines the WP package manager class.
  */
@@ -55,15 +53,7 @@ class WP_Package_Manager implements Package_Manager_Interface {
 		$plugins = get_plugins();
 
 		$this->package_cache['plugins'] = array_map(
-			function( $file, array $plugin ) {
-				if ( false === strpos( $file, '/' ) ) {
-					$slug = basename( $file, '.php' );
-				} else {
-					$slug = dirname( $file );
-				}
-
-				return new Package( $slug, 'plugin', $plugin['Version'] );
-			},
+			'Soter_Core\\Package::from_plugin_array',
 			array_keys( $plugins ),
 			$plugins
 		);
@@ -86,13 +76,7 @@ class WP_Package_Manager implements Package_Manager_Interface {
 			return $this->package_cache['themes'];
 		}
 
-		$themes = array_map( function( WP_Theme $theme ) {
-			return new Package(
-				$theme->get_stylesheet(),
-				'theme',
-				$theme->get( 'Version' )
-			);
-		}, wp_get_themes() );
+		$themes = array_map( 'Soter_Core\\Package::from_theme_object', wp_get_themes() );
 
 		$this->package_cache['themes'] = array_values( $themes );
 
@@ -114,12 +98,7 @@ class WP_Package_Manager implements Package_Manager_Interface {
 			return $this->package_cache['wordpresses'];
 		}
 
-		$version = get_bloginfo( 'version' );
-		$slug = str_replace( '.', '', $version );
-
-		$this->package_cache['wordpresses'] = array(
-			new Package( $slug, 'wordpress', $version ),
-		);
+		$this->package_cache['wordpresses'] = array( Package::from_wordpress_env() );
 
 		return $this->package_cache['wordpresses'];
 	}
