@@ -11,7 +11,7 @@ namespace Soter_Core;
  * Defines the cached HTTP client class.
  */
 class Cached_Http_Client implements Http_Interface {
-	const KEY = 'soter_core:v0.1.0:http:get:%s';
+	const KEY = 'soter_core:v0.2.0:http:get:%s';
 
 	/**
 	 * Cache instance.

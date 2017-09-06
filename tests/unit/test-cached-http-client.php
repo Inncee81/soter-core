@@ -12,7 +12,7 @@ class Cached_Http_Client_Test extends PHPUnit_Framework_TestCase {
 		$http = Mockery::mock( 'Soter_Core\\Http_Interface' );
 		$cache = Mockery::mock( 'Soter_Core\\Cache_Interface' )
 			->shouldReceive( 'get' )
-			->with( 'soter_core:v0.1.0:http:get:testing' )
+			->with( 'soter_core:v0.2.0:http:get:testing' )
 			->once()
 			->andReturn( 'cached-response' )
 			->getMock();
@@ -32,11 +32,11 @@ class Cached_Http_Client_Test extends PHPUnit_Framework_TestCase {
 			->getMock();
 		$cache = Mockery::mock( 'Soter_Core\\Cache_Interface' )
 			->shouldReceive( 'get' )
-			->with( 'soter_core:v0.1.0:http:get:testing' )
+			->with( 'soter_core:v0.2.0:http:get:testing' )
 			->once()
 			->andReturnNull()
 			->shouldReceive( 'put' )
-			->with( 'soter_core:v0.1.0:http:get:testing', 'fresh-response' )
+			->with( 'soter_core:v0.2.0:http:get:testing', 'fresh-response' )
 			->once()
 			->getMock();
 
