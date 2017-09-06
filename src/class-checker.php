@@ -7,12 +7,10 @@
 
 namespace Soter_Core;
 
-use WP_Theme;
-
 /**
  * Defines the checker class.
  */
-class Checker implements Checker_Interface {
+class Checker {
 	/**
 	 * API client instance.
 	 *
@@ -34,7 +32,7 @@ class Checker implements Checker_Interface {
 	 * @param Package_Manager_Interface $package_manager Package manager instance.
 	 */
 	public function __construct(
-		Client_Interface $client,
+		Api_Client $client,
 		Package_Manager_Interface $package_manager
 	) {
 		$this->client = $client;
@@ -48,7 +46,7 @@ class Checker implements Checker_Interface {
 	 *
 	 * @return Vulnerability_Interface[]
 	 */
-	public function check_package( Package_Interface $package ) {
+	public function check_package( Package $package ) {
 		$response = $this->client->check( $package );
 		$vulnerabilities = $response->get_vulnerabilities_for_current_version();
 
@@ -71,7 +69,7 @@ class Checker implements Checker_Interface {
 		if ( ! empty( $ignored ) ) {
 			$packages = array_filter(
 				$packages,
-				function( Package_Interface $package ) use ( $ignored ) {
+				function( Package $package ) use ( $ignored ) {
 					return ! in_array( $package->get_slug(), $ignored, true );
 				}
 			);

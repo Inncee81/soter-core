@@ -12,7 +12,7 @@ use DateTime;
 /**
  * Defines the API response class.
  */
-class Api_Response implements Response_Interface {
+class Api_Response {
 	/**
 	 * Raw response body.
 	 *
@@ -50,7 +50,7 @@ class Api_Response implements Response_Interface {
 	 * @param string[] $headers List of response headers with lowercase keys.
 	 * @param string   $body    Response body.
 	 */
-	public function __construct( $status, array $headers, $body, Package_Interface $package ) {
+	public function __construct( $status, array $headers, $body, Package $package ) {
 		$this->status = intval( $status );
 		$this->headers = $headers;
 		$this->body = (string) $body;
@@ -142,7 +142,7 @@ class Api_Response implements Response_Interface {
 		$version = (string) $version;
 
 		return $this->data['vulnerabilities']->filter(
-			function( Vulnerability_Interface $vulnerability ) use ( $version ) {
+			function( Api_Vulnerability $vulnerability ) use ( $version ) {
 				return $vulnerability->affects_version( $version );
 			}
 		);

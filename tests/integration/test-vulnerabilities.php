@@ -3,7 +3,6 @@
 use Soter_Core\Package;
 use Soter_Core\Vulnerabilities;
 use Soter_Core\Api_Vulnerability;
-use Soter_Core\Vulnerability_Interface;
 
 class Vulnerabilities_Test extends WP_UnitTestCase {
 	protected $vulnerabilities;
@@ -65,7 +64,7 @@ class Vulnerabilities_Test extends WP_UnitTestCase {
 	/** @test */
 	function it_is_filterable() {
 		$vulnerabilities = new Vulnerabilities( $this->vulnerabilities );
-		$filtered = $vulnerabilities->filter( function( Vulnerability_Interface $vulnerability ) {
+		$filtered = $vulnerabilities->filter( function( Api_Vulnerability $vulnerability ) {
 			return $vulnerability->affects_version( '3.7' );
 		} );
 
@@ -146,7 +145,7 @@ class Vulnerabilities_Test extends WP_UnitTestCase {
 		$vulnerabilities = new Vulnerabilities( $this->vulnerabilities );
 
 		foreach ( $vulnerabilities as $vulnerability ) {
-			$this->assertInstanceOf( 'Soter_Core\\Vulnerability_Interface', $vulnerability );
+			$this->assertInstanceOf( 'Soter_Core\\Api_Vulnerability', $vulnerability );
 		}
 	}
 }

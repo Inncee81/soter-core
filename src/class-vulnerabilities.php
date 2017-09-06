@@ -22,7 +22,7 @@ class Vulnerabilities implements IteratorAggregate, Countable {
 		$this->add_many( $vulnerabilities );
 	}
 
-	public function add( Vulnerability_Interface $vulnerability ) {
+	public function add( Api_Vulnerability $vulnerability ) {
 		// Keyed by ID to prevent duplicates.
 		$this->vulnerabilities[ $vulnerability->id ] = $vulnerability;
 

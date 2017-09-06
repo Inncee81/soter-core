@@ -12,7 +12,7 @@ use InvalidArgumentException;
 /**
  * Defines the API client class.
  */
-class Api_Client implements Client_Interface {
+class Api_Client {
 	const BASE_URL = 'https://wpvulndb.com/api/v2';
 
 	/**
@@ -37,17 +37,17 @@ class Api_Client implements Client_Interface {
 		$this->http = $http;
 	}
 
-	public function check( Package_Interface $package ) {
+	public function check( Package $package ) {
 		list( $status, $headers, $body ) = $this->http->get( $this->build_url_for( $package ) );
 
 		return new Api_Response( $status, $headers, $body, $package );
 	}
 
-	protected function build_url_for( Package_Interface $package ) {
+	protected function build_url_for( Package $package ) {
 		return self::BASE_URL . '/' . $this->get_route_for( $package ) . '/' . $package->get_slug();
 	}
 
-	protected function get_route_for( Package_Interface $package ) {
+	protected function get_route_for( Package $package ) {
 		if ( ! isset( $this->route_map[ $package->get_type() ] ) ) {
 			throw new InvalidArgumentException(
 				"Unsupported package type [{$package->get_type()}]"

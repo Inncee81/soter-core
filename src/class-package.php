@@ -15,7 +15,7 @@ use WP_Theme;
  * This class acts as a data container for packages to provide some minmal
  * normalization between themes, plugins and WordPress core.
  */
-class Package implements Package_Interface {
+class Package {
 	const TYPE_PLUGIN = 'plugin';
 	const TYPE_THEME = 'theme';
 	const TYPE_WORDPRESS = 'wordpress';
