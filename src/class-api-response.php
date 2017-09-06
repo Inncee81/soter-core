@@ -141,8 +141,7 @@ class Api_Response implements Response_Interface {
 
 		$version = (string) $version;
 
-		return array_filter(
-			$this->data['vulnerabilities'],
+		return $this->data['vulnerabilities']->filter(
 			function( Vulnerability_Interface $vulnerability ) use ( $version ) {
 				return $vulnerability->affects_version( $version );
 			}
@@ -160,8 +159,7 @@ class Api_Response implements Response_Interface {
 	 */
 	public function has_vulnerabilities() {
 		return isset( $this->data['vulnerabilities'] )
-			&& is_array( $this->data['vulnerabilities'] )
-			&& count( $this->data['vulnerabilities'] );
+			&& $this->data['vulnerabilities']->not_empty();
 	}
 
 	/**
@@ -206,18 +204,19 @@ class Api_Response implements Response_Interface {
 		}
 
 		if ( isset( $data['last_updated'] ) ) {
+			// @todo Try/catch?
 			$data['last_updated'] = new DateTime(
 				$data['last_updated']
 			);
 		}
 
-		$package = $this->package;
-
-		$data['vulnerabilities'] = array_map(
-			function( array $vulnerability ) use ( $package ) {
-				return new Api_Vulnerability( $package, $vulnerability );
-			},
-			$data['vulnerabilities']
+		$data['vulnerabilities'] = new Vulnerabilities(
+			array_map(
+				function( array $vulnerability ) {
+					return new Api_Vulnerability( $this->package, $vulnerability );
+				},
+				$data['vulnerabilities']
+			)
 		);
 
 		return $data;

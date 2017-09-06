@@ -35,7 +35,7 @@ class Checker_Test extends WP_UnitTestCase {
 				'Contact Form 7 <= 3.7.1 - Security Bypass',
 				'Contact Form 7 <= 3.5.2 - File Upload Remote Code Execution',
 			),
-			wp_list_pluck( $vulns, 'title' )
+			$vulns->pluck( 'title' )
 		);
 	}
 
@@ -53,7 +53,7 @@ class Checker_Test extends WP_UnitTestCase {
 				'Contact Form 7 <= 3.7.1 - Security Bypass',
 				'Twenty Fifteen Theme <= 1.1 - DOM Cross-Site Scripting (XSS)',
 			),
-			wp_list_pluck( $vulns, 'title' )
+			$vulns->pluck( 'title' )
 		);
 	}
 
@@ -68,7 +68,7 @@ class Checker_Test extends WP_UnitTestCase {
 
 		$this->assertEqualSets(
 			array( 'Contact Form 7 <= 3.7.1 - Security Bypass' ),
-			wp_list_pluck( $vulns, 'title' )
+			$vulns->pluck( 'title' )
 		);
 	}
 
@@ -86,7 +86,7 @@ class Checker_Test extends WP_UnitTestCase {
 				'Contact Form 7 <= 3.5.2 - File Upload Remote Code Execution',
 				'Contact Form 7 <= 3.7.1 - Security Bypass',
 			),
-			wp_list_pluck( $vulns, 'title' )
+			$vulns->pluck( 'title' )
 		);
 	}
 
@@ -111,7 +111,7 @@ class Checker_Test extends WP_UnitTestCase {
 				'Twenty Fifteen Theme <= 1.1 - DOM Cross-Site Scripting (XSS)',
 				'WordPress 2.3-4.7.4 - Host Header Injection in Password Reset',
 			),
-			wp_list_pluck( $vulns, 'title' )
+			$vulns->pluck( 'title' )
 		);
 	}
 }

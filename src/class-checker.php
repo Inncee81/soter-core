@@ -50,11 +50,10 @@ class Checker implements Checker_Interface {
 	 */
 	public function check_package( Package_Interface $package ) {
 		$response = $this->client->check( $package );
-
-		$vulnerabilities = $response->get_vulnerabilities_by_version( $package->get_version() );
+		$vulnerabilities = $response->get_vulnerabilities_for_current_version();
 
 		if ( function_exists( 'do_action' ) ) {
-			do_action( 'soter_core_check_package_complete', $package, $vulnerabilities );
+			do_action( 'soter_core_check_package_complete', $vulnerabilities );
 		}
 
 		return $vulnerabilities;
@@ -72,19 +71,17 @@ class Checker implements Checker_Interface {
 		if ( ! empty( $ignored ) ) {
 			$packages = array_filter(
 				$packages,
-				function( Package $package ) use ( $ignored ) {
+				function( Package_Interface $package ) use ( $ignored ) {
 					return ! in_array( $package->get_slug(), $ignored, true );
 				}
 			);
 		}
 
-		$vulnerabilities = array();
+		$vulnerabilities = new Vulnerabilities();
 
 		foreach ( $packages as $package ) {
-			$vulnerabilities = array_merge( $vulnerabilities, $this->check_package( $package ) );
+			$vulnerabilities->merge_in( $this->check_package( $package ) );
 		}
-
-		$vulnerabilities = array_unique( $vulnerabilities );
 
 		if ( function_exists( 'do_action' ) ) {
 			do_action( 'soter_core_check_packages_complete', $vulnerabilities );

@@ -88,7 +88,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			$response->last_updated
 		);
 		$this->assertTrue( $response->popular );
-		$this->assertSame( 2, count( $response->vulnerabilities ) );
+		$this->assertSame( 2, $response->vulnerabilities->count() );
 	}
 
 	/** @test */
@@ -120,7 +120,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			$data['last_updated']
 		);
 		$this->assertTrue( $data['popular'] );
-		$this->assertSame( 2, count( $data['vulnerabilities'] ) );
+		$this->assertSame( 2, $data['vulnerabilities']->count() );
 	}
 
 	/** @test */
@@ -187,7 +187,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
 
-		$this->assertSame( 2, count( $response->get_vulnerabilities() ) );
+		$this->assertSame( 2, $response->get_vulnerabilities()->count() );
 	}
 
 	/** @test */
@@ -213,11 +213,11 @@ class Api_Response_Test extends WP_UnitTestCase {
 		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		// No version specified - Should return all vulnerabilities.
-		$this->assertSame( 2, count( $response->get_vulnerabilities_by_version() ) );
+		$this->assertSame( 2, $response->get_vulnerabilities_by_version()->count() );
 
-		$this->assertSame( 2, count( $response->get_vulnerabilities_by_version( '3.5' ) ) );
-		$this->assertSame( 1, count( $response->get_vulnerabilities_by_version( '3.7' ) ) );
-		$this->assertSame( 0, count( $response->get_vulnerabilities_by_version( '4.7' ) ) );
+		$this->assertSame( 2, $response->get_vulnerabilities_by_version( '3.5' )->count() );
+		$this->assertSame( 1, $response->get_vulnerabilities_by_version( '3.7' )->count() );
+		$this->assertSame( 0, $response->get_vulnerabilities_by_version( '4.7' )->count() );
 	}
 
 	/** @test */
@@ -232,31 +232,55 @@ class Api_Response_Test extends WP_UnitTestCase {
 	}
 
 	/** @test */
-	function it_knows_when_there_are_no_vulnerabilities() {
-		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-200-response' );
-
-		$response = new Api_Response(
-			$status,
-			$headers,
-			$body,
-			new Package( 'test', 'plugin', '0.1.0' )
+	function it_knows_whethere_there_are_vulnerabilities() {
+		list( $no_status, $no_headers, $no_body ) = sct_get_http_fixture_array(
+			'/non-200-response'
+		);
+		list( $yes_status, $yes_headers, $yes_body ) = sct_get_http_fixture_array(
+			'/api/v2/plugins/contact-form-7'
 		);
 
-		$this->assertFalse( $response->has_vulnerabilities() );
+		$no_vulns = new Api_Response(
+			$no_status,
+			$no_headers,
+			$no_body,
+			new Package( 'test', 'plugin', '0.1.0' )
+		);
+		$yes_vulns = new Api_Response(
+			$yes_status,
+			$yes_headers,
+			$yes_body,
+			$this->make_cf7_package()
+		);
+
+		$this->assertFalse( $no_vulns->has_vulnerabilities() );
+		$this->assertTrue( $yes_vulns->has_vulnerabilities() );
 	}
 
 	/** @test */
 	function it_knows_when_there_has_been_an_error() {
-		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-200-response' );
+		list( $no_status, $no_headers, $no_body ) = sct_get_http_fixture_array(
+			'/api/v2/plugins/contact-form-7'
+		);
+		list( $yes_status, $yes_headers, $yes_body ) = sct_get_http_fixture_array(
+			'/non-200-response'
+		);
 
-		$response = new Api_Response(
-			$status,
-			$headers,
-			$body,
+		$no_error = new Api_Response(
+			$no_status,
+			$no_headers,
+			$no_body,
+			$this->make_cf7_package()
+		);
+		$yes_error = new Api_Response(
+			$yes_status,
+			$yes_headers,
+			$yes_body,
 			new Package( 'test', 'plugin', '0.1.0' )
 		);
 
-		$this->assertTrue( $response->is_error() );
+		$this->assertTrue( $yes_error->is_error() );
+		$this->assertFalse( $no_error->is_error() );
 	}
 
 	protected function make_cf7_package() {
