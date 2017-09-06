@@ -1,14 +1,14 @@
 <?php
 
 use Soter_Core\Package;
-use Soter_Core\Api_Response;
+use Soter_Core\Response;
 
-class Api_Response_Test extends WP_UnitTestCase {
+class Response_Test extends WP_UnitTestCase {
 	/** @test */
 	function it_generates_error_array_for_non_200_responses() {
 		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-200-response' );
 
-		$response = new Api_Response(
+		$response = new Response(
 			$status,
 			$headers,
 			$body,
@@ -25,7 +25,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 	function it_generates_error_array_for_non_json_responses() {
 		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-json-response' );
 
-		$response = new Api_Response(
+		$response = new Response(
 			$status,
 			$headers,
 			$body,
@@ -42,7 +42,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 	function it_generates_error_array_for_invalid_json_responses() {
 		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/invalid-json-response' );
 
-		$response = new Api_Response(
+		$response = new Response(
 			$status,
 			$headers,
 			$body,
@@ -61,7 +61,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response(
+		$response = new Response(
 			$status,
 			$headers,
 			$body,
@@ -80,7 +80,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
+		$response = new Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertEquals( '4.7', $response->latest_version );
 		$this->assertEquals(
@@ -97,7 +97,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
+		$response = new Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertEquals(
 			'{"contact-form-7":{"latest_version":"4.7","last_updated":"2017-03-03T19:28:00.000Z","popular":true,"vulnerabilities":[{"id":7020,"title":"Contact Form 7 <= 3.7.1 - Security Bypass ","created_at":"2014-08-01T10:59:06.000Z","updated_at":"2015-05-15T13:48:25.000Z","published_date":null,"references":{"url":["http://www.securityfocus.com/bid/66381/"],"cve":["2014-2265"]},"vuln_type":"AUTHBYPASS","fixed_in":"3.7.2"},{"id":7022,"title":"Contact Form 7 <= 3.5.2 - File Upload Remote Code Execution","created_at":"2014-08-01T10:59:07.000Z","updated_at":"2015-05-15T13:48:25.000Z","published_date":null,"references":{"url":["http://packetstormsecurity.com/files/124154/"]},"vuln_type":"UPLOAD","fixed_in":"3.5.3"}]}}',
@@ -111,7 +111,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
+		$response = new Response( $status, $headers, $body, $this->make_cf7_package() );
 		$data = $response->get_data();
 
 		$this->assertEquals( '4.7', $data['latest_version'] );
@@ -129,7 +129,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
+		$response = new Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -163,7 +163,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 		);
 
 		$package = $this->make_cf7_package();
-		$response = new Api_Response( $status, $headers, $body, $package );
+		$response = new Response( $status, $headers, $body, $package );
 
 		$this->assertSame( $package, $response->get_package() );
 	}
@@ -174,7 +174,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
+		$response = new Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertSame( 200, $response->get_status() );
 	}
@@ -185,7 +185,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
+		$response = new Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertSame( 2, $response->get_vulnerabilities()->count() );
 	}
@@ -194,7 +194,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 	function it_returns_empty_instance_when_there_are_no_vulnerabilities() {
 		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-200-response' );
 
-		$response = new Api_Response(
+		$response = new Response(
 			$status,
 			$headers,
 			$body,
@@ -211,7 +211,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
+		$response = new Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		// No version specified - Should return all vulnerabilities.
 		$this->assertSame( 2, $response->get_vulnerabilities_by_version()->count() );
@@ -227,7 +227,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
+		$response = new Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertSame( 1, count( $response->get_vulnerabilities_for_current_version() ) );
 	}
@@ -241,13 +241,13 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$no_vulns = new Api_Response(
+		$no_vulns = new Response(
 			$no_status,
 			$no_headers,
 			$no_body,
 			new Package( 'test', 'plugin', '0.1.0' )
 		);
-		$yes_vulns = new Api_Response(
+		$yes_vulns = new Response(
 			$yes_status,
 			$yes_headers,
 			$yes_body,
@@ -267,13 +267,13 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/non-200-response'
 		);
 
-		$no_error = new Api_Response(
+		$no_error = new Response(
 			$no_status,
 			$no_headers,
 			$no_body,
 			$this->make_cf7_package()
 		);
-		$yes_error = new Api_Response(
+		$yes_error = new Response(
 			$yes_status,
 			$yes_headers,
 			$yes_body,

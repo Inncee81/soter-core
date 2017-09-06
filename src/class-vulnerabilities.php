@@ -40,11 +40,11 @@ class Vulnerabilities implements IteratorAggregate, Countable {
 	/**
 	 * Add a vulnerability to the list.
 	 *
-	 * @param Api_Vulnerability $vulnerability Vulnerability object.
+	 * @param Vulnerability $vulnerability Vulnerability object.
 	 *
 	 * @return $this
 	 */
-	public function add( Api_Vulnerability $vulnerability ) {
+	public function add( Vulnerability $vulnerability ) {
 		// Keyed by ID to prevent duplicates.
 		$this->vulnerabilities[ $vulnerability->id ] = $vulnerability;
 

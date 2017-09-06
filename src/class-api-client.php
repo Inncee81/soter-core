@@ -47,12 +47,12 @@ class Api_Client {
 	 *
 	 * @param  Package $package Package instance.
 	 *
-	 * @return Api_Response
+	 * @return Response
 	 */
 	public function check( Package $package ) {
 		list( $status, $headers, $body ) = $this->http->get( $this->build_url_for( $package ) );
 
-		return new Api_Response( $status, $headers, $body, $package );
+		return new Response( $status, $headers, $body, $package );
 	}
 
 	/**

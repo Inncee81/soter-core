@@ -2,7 +2,7 @@
 
 use Soter_Core\Package;
 use Soter_Core\Vulnerabilities;
-use Soter_Core\Api_Vulnerability;
+use Soter_Core\Vulnerability;
 
 class Vulnerabilities_Test extends WP_UnitTestCase {
 	protected $vulnerabilities;
@@ -17,7 +17,7 @@ class Vulnerabilities_Test extends WP_UnitTestCase {
 		$body = array_shift( $decoded );
 
 		$this->vulnerabilities = array_map( function( $vulnerability ) use ( $package ) {
-			return new Api_Vulnerability( $package, $vulnerability );
+			return new Vulnerability( $package, $vulnerability );
 		}, $body['vulnerabilities'] );
 	}
 
@@ -64,7 +64,7 @@ class Vulnerabilities_Test extends WP_UnitTestCase {
 	/** @test */
 	function it_is_filterable() {
 		$vulnerabilities = new Vulnerabilities( $this->vulnerabilities );
-		$filtered = $vulnerabilities->filter( function( Api_Vulnerability $vulnerability ) {
+		$filtered = $vulnerabilities->filter( function( Vulnerability $vulnerability ) {
 			return $vulnerability->affects_version( '3.7' );
 		} );
 
@@ -145,7 +145,7 @@ class Vulnerabilities_Test extends WP_UnitTestCase {
 		$vulnerabilities = new Vulnerabilities( $this->vulnerabilities );
 
 		foreach ( $vulnerabilities as $vulnerability ) {
-			$this->assertInstanceOf( 'Soter_Core\\Api_Vulnerability', $vulnerability );
+			$this->assertInstanceOf( 'Soter_Core\\Vulnerability', $vulnerability );
 		}
 	}
 }

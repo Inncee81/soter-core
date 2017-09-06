@@ -1,6 +1,6 @@
 <?php
 /**
- * Api_Response class.
+ * Response class.
  *
  * @package soter-core
  */
@@ -12,7 +12,7 @@ use DateTime;
 /**
  * Defines the API response class.
  */
-class Api_Response {
+class Response {
 	/**
 	 * Raw response body.
 	 *
@@ -149,7 +149,7 @@ class Api_Response {
 		$version = (string) $version;
 
 		return $this->data['vulnerabilities']->filter(
-			function( Api_Vulnerability $vulnerability ) use ( $version ) {
+			function( Vulnerability $vulnerability ) use ( $version ) {
 				return $vulnerability->affects_version( $version );
 			}
 		);
@@ -222,7 +222,7 @@ class Api_Response {
 		if ( isset( $data['vulnerabilities'] ) && is_array( $data['vulnerabilities'] ) ) {
 			$vulnerabilities->add_many(
 				array_map( function( array $vulnerability ) {
-					return new Api_Vulnerability( $this->package, $vulnerability );
+					return new Vulnerability( $this->package, $vulnerability );
 				}, $data['vulnerabilities'] )
 			);
 		}
