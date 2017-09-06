@@ -14,14 +14,14 @@ class WP_Package_Manager implements Package_Manager_Interface {
 	/**
 	 * Cache of Package instances for all packages installed on site.
 	 *
-	 * @var Package_Interface[]
+	 * @var Package[]
 	 */
 	protected $package_cache = array();
 
 	/**
 	 * Get a list of all installed packages.
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_packages() {
 		return array_merge(
@@ -34,7 +34,7 @@ class WP_Package_Manager implements Package_Manager_Interface {
 	/**
 	 * Get a list of all installed plugins.
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_plugins() {
 		// Class is being used outside of WordPress. Throw instead?
@@ -64,7 +64,7 @@ class WP_Package_Manager implements Package_Manager_Interface {
 	/**
 	 * Get a list of all installed themes.
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_themes() {
 		// Class is being used outside of WordPress. Throw instead?
@@ -86,7 +86,7 @@ class WP_Package_Manager implements Package_Manager_Interface {
 	/**
 	 * Get a list of all installed WordPress versions (should only have 1 item).
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_wordpresses() {
 		// Class is being used outside of WordPress. Throw instead?

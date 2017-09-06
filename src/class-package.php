@@ -18,7 +18,7 @@ use WP_Theme;
 class Package {
 	const TYPE_PLUGIN = 'plugin';
 	const TYPE_THEME = 'theme';
-	const TYPE_WORDPRESS = 'wordpress';
+	const TYPE_WORDPRESS = 'wordpress'; // WPCS: spelling ok.
 
 	/**
 	 * Package slug.
@@ -81,6 +81,14 @@ class Package {
 		return $this->version;
 	}
 
+	/**
+	 * Create a package from a plugin array.
+	 *
+	 * @param  string $file    Plugin file path relative to plugins dir.
+	 * @param  array  $headers List of plugin headers.
+	 *
+	 * @return static
+	 */
 	public static function from_plugin_array( string $file, array $headers ) {
 		if ( false === strpos( $file, '/' ) ) {
 			$slug = basename( $file, '.php' );
@@ -91,10 +99,22 @@ class Package {
 		return new static( $slug, static::TYPE_PLUGIN, $headers['Version'] );
 	}
 
+	/**
+	 * Create a package from a WP_Theme object.
+	 *
+	 * @param  WP_Theme $theme Theme object.
+	 *
+	 * @return static
+	 */
 	public static function from_theme_object( WP_Theme $theme ) {
 		return new static( $theme->get_stylesheet(), static::TYPE_THEME, $theme->get( 'Version' ) );
 	}
 
+	/**
+	 * Create a package from the current WordPress environment.
+	 *
+	 * @return static
+	 */
 	public static function from_wordpress_env() {
 		$version = get_bloginfo( 'version' );
 		$slug = str_replace( '.', '', $version );

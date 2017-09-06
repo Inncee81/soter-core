@@ -191,7 +191,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 	}
 
 	/** @test */
-	function it_returns_an_empty_array_when_there_are_no_vulnerabilities() {
+	function it_returns_empty_instance_when_there_are_no_vulnerabilities() {
 		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-200-response' );
 
 		$response = new Api_Response(
@@ -201,7 +201,8 @@ class Api_Response_Test extends WP_UnitTestCase {
 			new Package( 'test', 'plugin', '0.1.0' )
 		);
 
-		$this->assertSame( array(), $response->get_vulnerabilities() );
+		$this->assertCount( 0, $response->get_vulnerabilities() );
+		$this->assertTrue( $response->get_vulnerabilities()->is_empty() );
 	}
 
 	/** @test */

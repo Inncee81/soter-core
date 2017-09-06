@@ -14,7 +14,7 @@ class Checker {
 	/**
 	 * API client instance.
 	 *
-	 * @var Client_Interface
+	 * @var Api_Client
 	 */
 	protected $client;
 
@@ -28,7 +28,7 @@ class Checker {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Client_Interface          $client          API client instance.
+	 * @param Api_Client                $client          API client instance.
 	 * @param Package_Manager_Interface $package_manager Package manager instance.
 	 */
 	public function __construct(
@@ -42,9 +42,9 @@ class Checker {
 	/**
 	 * Check a single package.
 	 *
-	 * @param  Package_Interface $package Package instance.
+	 * @param  Package $package Package instance.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_package( Package $package ) {
 		$response = $this->client->check( $package );
@@ -60,10 +60,10 @@ class Checker {
 	/**
 	 * Check multiple packages.
 	 *
-	 * @param  Package_Interface[] $packages List of Package instances.
-	 * @param  string[]            $ignored  List of package slugs to ignore.
+	 * @param  Package[] $packages List of Package instances.
+	 * @param  string[]  $ignored  List of package slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_packages( array $packages, array $ignored = array() ) {
 		if ( ! empty( $ignored ) ) {
@@ -93,7 +93,7 @@ class Checker {
 	 *
 	 * @param string[] $ignored List of plugin slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_plugins( array $ignored = array() ) {
 		return $this->check_packages(
@@ -107,7 +107,7 @@ class Checker {
 	 *
 	 * @param string[] $ignored List of package slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_site( array $ignored = array() ) {
 		return $this->check_packages(
@@ -121,7 +121,7 @@ class Checker {
 	 *
 	 * @param string[] $ignored List of theme slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_themes( array $ignored = array() ) {
 		return $this->check_packages(
@@ -135,7 +135,7 @@ class Checker {
 	 *
 	 * @param string[] $ignored List of WordPress slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_wordpress( array $ignored = array() ) {
 		return $this->check_packages(
@@ -147,7 +147,7 @@ class Checker {
 	/**
 	 * Get the API client instance.
 	 *
-	 * @return Client_Interface
+	 * @return Api_Client
 	 */
 	public function get_client() {
 		return $this->client;

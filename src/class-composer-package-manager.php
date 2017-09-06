@@ -24,7 +24,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	/**
 	 * Cache of Package instances for all packages installed on site.
 	 *
-	 * @var Package_Interface[]
+	 * @var Package[]
 	 */
 	protected $package_cache = array();
 
@@ -40,7 +40,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	/**
 	 * Get a list of all installed packages.
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_packages() {
 		return array_merge(
@@ -53,7 +53,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	/**
 	 * Get a list of all installed plugins.
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_plugins() {
 		if ( isset( $this->package_cache['plugins'] ) ) {
@@ -75,7 +75,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	/**
 	 * Get a list of all installed themes.
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_themes() {
 		if ( isset( $this->package_cache['themes'] ) ) {
@@ -97,7 +97,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	/**
 	 * Get a list of all installed WordPress versions (should only ever have 1 item).
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_wordpresses() {
 		if ( isset( $this->package_cache['wordpresses'] ) ) {

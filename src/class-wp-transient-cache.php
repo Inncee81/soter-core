@@ -7,8 +7,6 @@
 
 namespace Soter_Core;
 
-use wpdb;
-
 /**
  * Defines the WP transient cache class.
  */
@@ -34,7 +32,6 @@ class WP_Transient_Cache implements Cache_Interface {
 	 *
 	 * Requires WP >= 4.4 for transient key length of 172 characters.
 	 *
-	 * @param wpdb         $db               WordPress database instance.
 	 * @param string       $prefix           Cache prefix string.
 	 * @param null|integer $default_lifetime Default cache entry lifetime.
 	 *
@@ -43,12 +40,14 @@ class WP_Transient_Cache implements Cache_Interface {
 	public function __construct( $prefix = '', $default_lifetime = null ) {
 		// 40 for length of sha1, additional 1 for "_" separator.
 		if ( self::MAX_KEY_LENGTH - 40 - 1 < strlen( $prefix ) ) {
-			throw new \InvalidArgumentException( sprintf(
-				'Provided prefix [%s, length of %s] exceeds maximum length of %s',
-				$prefix,
-				strlen( $prefix ),
-				self::MAX_KEY_LENGTH
-			) );
+			throw new \InvalidArgumentException(
+				sprintf(
+					'Provided prefix [%s, length of %s] exceeds maximum length of %s',
+					$prefix,
+					strlen( $prefix ),
+					self::MAX_KEY_LENGTH
+				)
+			);
 		}
 
 		$this->prefix = (string) $prefix;

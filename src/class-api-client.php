@@ -22,6 +22,11 @@ class Api_Client {
 	 */
 	protected $http;
 
+	/**
+	 * Map of package types to API routes.
+	 *
+	 * @var array
+	 */
 	protected $route_map = [
 		'plugin' => 'plugins',
 		'theme' => 'themes',
@@ -37,16 +42,39 @@ class Api_Client {
 		$this->http = $http;
 	}
 
+	/**
+	 * Check a package instance against the API.
+	 *
+	 * @param  Package $package Package instance.
+	 *
+	 * @return Api_Response
+	 */
 	public function check( Package $package ) {
 		list( $status, $headers, $body ) = $this->http->get( $this->build_url_for( $package ) );
 
 		return new Api_Response( $status, $headers, $body, $package );
 	}
 
+	/**
+	 * Build the API URL for a given package.
+	 *
+	 * @param  Package $package Package instance.
+	 *
+	 * @return string
+	 */
 	protected function build_url_for( Package $package ) {
 		return self::BASE_URL . '/' . $this->get_route_for( $package ) . '/' . $package->get_slug();
 	}
 
+	/**
+	 * Get the API route for a given package.
+	 *
+	 * @param  Package $package Package instance.
+	 *
+	 * @return string
+	 *
+	 * @throws InvalidArgumentException When $package is of an unsupported type.
+	 */
 	protected function get_route_for( Package $package ) {
 		if ( ! isset( $this->route_map[ $package->get_type() ] ) ) {
 			throw new InvalidArgumentException(

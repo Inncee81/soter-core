@@ -34,6 +34,11 @@ class Api_Response {
 	 */
 	protected $headers;
 
+	/**
+	 * Package for which this response was generated.
+	 *
+	 * @var Package
+	 */
 	protected $package;
 
 	/**
@@ -49,6 +54,7 @@ class Api_Response {
 	 * @param int      $status  Response status code.
 	 * @param string[] $headers List of response headers with lowercase keys.
 	 * @param string   $body    Response body.
+	 * @param Package  $package Package instance for which the reponse is generated.
 	 */
 	public function __construct( $status, array $headers, $body, Package $package ) {
 		$this->status = intval( $status );
@@ -101,6 +107,11 @@ class Api_Response {
 		return $this->headers;
 	}
 
+	/**
+	 * Package getter.
+	 *
+	 * @return Package
+	 */
 	public function get_package() {
 		return $this->package;
 	}
@@ -117,7 +128,7 @@ class Api_Response {
 	/**
 	 * Vulnerabilities getter.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function get_vulnerabilities() {
 		return $this->get_vulnerabilities_by_version();
@@ -128,13 +139,9 @@ class Api_Response {
 	 *
 	 * @param  string|null $version Package version.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function get_vulnerabilities_by_version( $version = null ) {
-		if ( ! $this->has_vulnerabilities() ) {
-			return array();
-		}
-
 		if ( is_null( $version ) ) {
 			return $this->data['vulnerabilities'];
 		}
@@ -148,6 +155,11 @@ class Api_Response {
 		);
 	}
 
+	/**
+	 * Get all vulnerabilities that affect the current version of the attached package.
+	 *
+	 * @return Vulnerabilities
+	 */
 	public function get_vulnerabilities_for_current_version() {
 		return $this->get_vulnerabilities_by_version( $this->get_package()->get_version() );
 	}
@@ -204,20 +216,22 @@ class Api_Response {
 		}
 
 		if ( isset( $data['last_updated'] ) ) {
-			// @todo Try/catch?
 			$data['last_updated'] = new DateTime(
 				$data['last_updated']
 			);
 		}
 
-		$data['vulnerabilities'] = new Vulnerabilities(
-			array_map(
-				function( array $vulnerability ) {
+		$vulnerabilities = new Vulnerabilities();
+
+		if ( isset( $data['vulnerabilities'] ) && is_array( $data['vulnerabilities'] ) ) {
+			$vulnerabilities->add_many(
+				array_map( function( array $vulnerability ) {
 					return new Api_Vulnerability( $this->package, $vulnerability );
-				},
-				$data['vulnerabilities']
-			)
-		);
+				}, $data['vulnerabilities'] )
+			);
+		}
+
+		$data['vulnerabilities'] = $vulnerabilities;
 
 		return $data;
 	}
@@ -238,6 +252,7 @@ class Api_Response {
 				'code' => $this->status,
 				'message' => $message,
 			),
+			'vulnerabilities' => new Vulnerabilities(),
 		);
 	}
 }
