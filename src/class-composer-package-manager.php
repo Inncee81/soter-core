@@ -22,13 +22,6 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	protected $lock;
 
 	/**
-	 * Cache of Package instances for all packages installed on site.
-	 *
-	 * @var Package[]
-	 */
-	protected $package_cache = array();
-
-	/**
 	 * Class constructor.
 	 *
 	 * @param Lock $lock WordPress lock file instance.
@@ -52,11 +45,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	 * @return Package[]
 	 */
 	public function get_plugins() {
-		if ( isset( $this->package_cache['plugins'] ) ) {
-			return $this->package_cache['plugins'];
-		}
-
-		$this->package_cache['plugins'] = array_map(
+		return array_map(
 			function( LockPackage $plugin ) {
 				list( $_, $slug ) = explode( '/', $plugin->name() );
 
@@ -64,8 +53,6 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 			},
 			$this->lock->plugin_packages()
 		);
-
-		return $this->package_cache['plugins'];
 	}
 
 	/**
@@ -74,11 +61,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	 * @return Package[]
 	 */
 	public function get_themes() {
-		if ( isset( $this->package_cache['themes'] ) ) {
-			return $this->package_cache['themes'];
-		}
-
-		$this->package_cache['themes'] = array_map(
+		return array_map(
 			function( LockPackage $theme ) {
 				list( $_, $slug ) = explode( '/', $theme->name() );
 
@@ -86,8 +69,6 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 			},
 			$this->lock->theme_packages()
 		);
-
-		return $this->package_cache['themes'];
 	}
 
 	/**
@@ -96,11 +77,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	 * @return Package[]
 	 */
 	public function get_wordpresses() {
-		if ( isset( $this->package_cache['wordpresses'] ) ) {
-			return $this->package_cache['wordpresses'];
-		}
-
-		$this->package_cache['wordpresses'] = array_map(
+		return array_map(
 			function( LockPackage $wordpress ) {
 				$slug = str_replace( '.', '', $wordpress->version() );
 
@@ -108,7 +85,5 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 			},
 			$this->lock->core_packages()
 		);
-
-		return $this->package_cache['wordpresses'];
 	}
 }

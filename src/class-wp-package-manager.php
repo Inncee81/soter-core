@@ -12,13 +12,6 @@ namespace Soter_Core;
  */
 class WP_Package_Manager implements Package_Manager_Interface {
 	/**
-	 * Cache of Package instances for all packages installed on site.
-	 *
-	 * @var Package[]
-	 */
-	protected $package_cache = array();
-
-	/**
 	 * Get a list of all installed packages.
 	 *
 	 * @return Package[]
@@ -38,23 +31,17 @@ class WP_Package_Manager implements Package_Manager_Interface {
 			return array();
 		}
 
-		if ( isset( $this->package_cache['plugins'] ) ) {
-			return $this->package_cache['plugins'];
-		}
-
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
 		$plugins = get_plugins();
 
-		$this->package_cache['plugins'] = array_map(
+		return array_map(
 			'Soter_Core\\Package::from_plugin_array',
 			array_keys( $plugins ),
 			$plugins
 		);
-
-		return $this->package_cache['plugins'];
 	}
 
 	/**
@@ -68,15 +55,10 @@ class WP_Package_Manager implements Package_Manager_Interface {
 			return array();
 		}
 
-		if ( isset( $this->package_cache['themes'] ) ) {
-			return $this->package_cache['themes'];
-		}
-
-		$themes = array_map( 'Soter_Core\\Package::from_theme_object', wp_get_themes() );
-
-		$this->package_cache['themes'] = array_values( $themes );
-
-		return $this->package_cache['themes'];
+		return array_values( array_map(
+			'Soter_Core\\Package::from_theme_object',
+			wp_get_themes()
+		) );
 	}
 
 	/**
@@ -90,12 +72,6 @@ class WP_Package_Manager implements Package_Manager_Interface {
 			return array();
 		}
 
-		if ( isset( $this->package_cache['wordpresses'] ) ) {
-			return $this->package_cache['wordpresses'];
-		}
-
-		$this->package_cache['wordpresses'] = array( Package::from_wordpress_env() );
-
-		return $this->package_cache['wordpresses'];
+		return array( Package::from_wordpress_env() );
 	}
 }
