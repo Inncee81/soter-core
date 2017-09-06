@@ -9,9 +9,6 @@
 		<testsuite name="integration">
 			<directory prefix="test-" suffix=".php">./tests/integration/</directory>
 		</testsuite>
-        <testsuite name="local-integration">
-            <directory prefix="local-test-" suffix=".php">./tests/integration/</directory>
-        </testsuite>
         <testsuite name="unit">
             <directory prefix="test-" suffix=".php">./tests/unit/</directory>
         </testsuite>
