@@ -8,7 +8,6 @@
 namespace Soter_Core;
 
 use DateTime;
-use RuntimeException;
 
 /**
  * Defines the API response class.
@@ -35,6 +34,8 @@ class Api_Response implements Response_Interface {
 	 */
 	protected $headers;
 
+	protected $package;
+
 	/**
 	 * Response status code.
 	 *
@@ -49,10 +50,11 @@ class Api_Response implements Response_Interface {
 	 * @param string[] $headers List of response headers with lowercase keys.
 	 * @param string   $body    Response body.
 	 */
-	public function __construct( $status, array $headers, $body ) {
+	public function __construct( $status, array $headers, $body, Package_Interface $package ) {
 		$this->status = intval( $status );
 		$this->headers = $headers;
 		$this->body = (string) $body;
+		$this->package = $package;
 
 		$this->data = $this->generate_data();
 	}
@@ -99,6 +101,10 @@ class Api_Response implements Response_Interface {
 		return $this->headers;
 	}
 
+	public function get_package() {
+		return $this->package;
+	}
+
 	/**
 	 * Status code getter.
 	 *
@@ -114,11 +120,7 @@ class Api_Response implements Response_Interface {
 	 * @return Vulnerability_Interface[]
 	 */
 	public function get_vulnerabilities() {
-		if ( ! $this->has_vulnerabilities() ) {
-			return array();
-		}
-
-		return $this->data['vulnerabilities'];
+		return $this->get_vulnerabilities_by_version();
 	}
 
 	/**
@@ -138,15 +140,17 @@ class Api_Response implements Response_Interface {
 		}
 
 		$version = (string) $version;
-		$vulnerabilities = array();
 
-		foreach ( $this->data['vulnerabilities'] as $vulnerability ) {
-			if ( $vulnerability->affects_version( $version ) ) {
-				$vulnerabilities[] = $vulnerability;
+		return array_filter(
+			$this->data['vulnerabilities'],
+			function( Vulnerability_Interface $vulnerability ) use ( $version ) {
+				return $vulnerability->affects_version( $version );
 			}
-		}
+		);
+	}
 
-		return $vulnerabilities;
+	public function get_vulnerabilities_for_current_version() {
+		return $this->get_vulnerabilities_by_version( $this->get_package()->get_version() );
 	}
 
 	/**
@@ -190,14 +194,16 @@ class Api_Response implements Response_Interface {
 		$decoded = json_decode( $this->body, true );
 
 		if ( null === $decoded || JSON_ERROR_NONE !== json_last_error() ) {
-			return $this->generate_error(
-				'Response does not appear to be valid JSON'
-			);
+			return $this->generate_error( 'Response does not appear to be valid JSON' );
 		}
 
 		$data = current( $decoded );
-		$data['slug'] = key( $decoded );
-		$slug = $data['slug'];
+		$slug = key( $decoded );
+
+		// Slug will be slug for plugins and themes, version for WordPress.
+		if ( $slug !== $this->package->get_slug() && $slug !== $this->package->get_version() ) {
+			return $this->generate_error( 'Response slug does not match package slug' );
+		}
 
 		if ( isset( $data['last_updated'] ) ) {
 			$data['last_updated'] = new DateTime(
@@ -205,9 +211,11 @@ class Api_Response implements Response_Interface {
 			);
 		}
 
+		$package = $this->package;
+
 		$data['vulnerabilities'] = array_map(
-			function( array $vulnerability ) use ( $slug ) {
-				return new Api_Vulnerability( $slug, $vulnerability );
+			function( array $vulnerability ) use ( $package ) {
+				return new Api_Vulnerability( $package, $vulnerability );
 			},
 			$data['vulnerabilities']
 		);

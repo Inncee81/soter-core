@@ -21,17 +21,6 @@ class Checker implements Checker_Interface {
 	protected $client;
 
 	/**
-	 * Map of package types to API client methods.
-	 *
-	 * @var string[]
-	 */
-	protected $method_map = array(
-		'plugin' => 'plugins',
-		'theme' => 'themes',
-		'wordpress' => 'wordpresses',
-	);
-
-	/**
 	 * Package manager instance.
 	 *
 	 * @var Package_Manager_Interface
@@ -60,20 +49,12 @@ class Checker implements Checker_Interface {
 	 * @return Vulnerability_Interface[]
 	 */
 	public function check_package( Package_Interface $package ) {
-		$client_method = $this->get_client_method( $package );
+		$response = $this->client->check( $package );
 
-		$response = $this->client->{$client_method}( $package->get_slug() );
-
-		$vulnerabilities = $response->get_vulnerabilities_by_version(
-			$package->get_version()
-		);
+		$vulnerabilities = $response->get_vulnerabilities_by_version( $package->get_version() );
 
 		if ( function_exists( 'do_action' ) ) {
-			do_action(
-				'soter_core_check_package_complete',
-				$package,
-				$vulnerabilities
-			);
+			do_action( 'soter_core_check_package_complete', $package, $vulnerabilities );
 		}
 
 		return $vulnerabilities;
@@ -100,10 +81,7 @@ class Checker implements Checker_Interface {
 		$vulnerabilities = array();
 
 		foreach ( $packages as $package ) {
-			$vulnerabilities = array_merge(
-				$vulnerabilities,
-				$this->check_package( $package )
-			);
+			$vulnerabilities = array_merge( $vulnerabilities, $this->check_package( $package ) );
 		}
 
 		$vulnerabilities = array_unique( $vulnerabilities );
@@ -214,24 +192,5 @@ class Checker implements Checker_Interface {
 	 */
 	public function get_wordpress_count() {
 		return count( $this->package_manager->get_wordpresses() );
-	}
-
-	/**
-	 * Get the appropriate API client method for a given package.
-	 *
-	 * @param  Package_Interface $package Package instance.
-	 *
-	 * @return string
-	 *
-	 * @throws \InvalidArgumentException When there is no matching method for a type.
-	 */
-	protected function get_client_method( Package_Interface $package ) {
-		if ( isset( $this->method_map[ $package->get_type() ] ) ) {
-			return $this->method_map[ $package->get_type() ];
-		}
-
-		throw new \InvalidArgumentException(
-			"Unsupported package type [{$package->get_type()}]"
-		);
 	}
 }

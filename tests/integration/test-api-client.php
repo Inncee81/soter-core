@@ -1,15 +1,31 @@
 <?php
 
+use Soter_Core\Package;
 use Soter_Core\Api_Client;
-use Soter_Core\Null_Cache;
 
 class Api_Client_Test extends WP_UnitTestCase {
-	/** @test */
-	function it_can_make_requests_to_the_plugins_endpoint() {
-		$http = new Filesystem_Http_Client;
-		$client = new Api_Client( $http );
+	protected $api_client;
 
-		$response = $client->plugins( 'contact-form-7' );
+	public function setUp() {
+		parent::setUp();
+
+		$this->api_client = new Api_Client( new Filesystem_Http_Client );
+	}
+
+	public function tearDown() {
+		parent::tearDown();
+
+		$this->api_client = null;
+	}
+
+	/** @test */
+	function it_can_check_plugins() {
+		$plugins = include __DIR__ . '/../fixtures/get-plugins.php';
+
+		$response = $this->api_client->check( Package::from_plugin_array(
+			'contact-form-7',
+			$plugins['contact-form-7/wp-contact-form-7.php']
+		) );
 
 		$this->assertInstanceOf( 'Soter_Core\\Api_Response', $response );
 		$this->assertEquals(
@@ -19,11 +35,16 @@ class Api_Client_Test extends WP_UnitTestCase {
 	}
 
 	/** @test */
-	function it_can_make_requests_to_the_themes_endpoint() {
-		$http = new Filesystem_Http_Client;
-		$client = new Api_Client( $http );
+	function it_can_check_themes() {
+		$themes = wp_get_themes();
 
-		$response = $client->themes( 'twentyfifteen' );
+		if ( ! isset( $themes['twentyfifteen'] ) ) {
+			$this->fail( 'twentyfifteen theme does not appear to be isntalled' );
+		}
+
+		$response = $this->api_client->check(
+			Package::from_theme_object( $themes['twentyfifteen'] )
+		);
 
 		$this->assertInstanceOf( 'Soter_Core\\Api_Response', $response );
 		$this->assertEquals(
@@ -33,16 +54,22 @@ class Api_Client_Test extends WP_UnitTestCase {
 	}
 
 	/** @test */
-	function it_can_make_requests_to_the_wordpresses_endpoint() {
-		$http = new Filesystem_Http_Client;
-		$client = new Api_Client( $http );
-
-		$response = $client->wordpresses( '474' );
+	function it_can_check_wordpresses() {
+		$response = $this->api_client->check(
+			new Package( '474', Package::TYPE_WORDPRESS, '4.7.4' )
+		);
 
 		$this->assertInstanceOf( 'Soter_Core\\Api_Response', $response );
 		$this->assertEquals(
 			'{"4.7.4":{"release_date":"2017-04-20","changelog_url":"https://codex.wordpress.org/Version_4.7.4","vulnerabilities":[{"id":8807,"title":"WordPress 2.3-4.7.4 - Host Header Injection in Password Reset","created_at":"2017-05-05T09:47:44.000Z","updated_at":"2017-05-05T09:48:40.000Z","published_date":"2017-05-03T00:00:00.000Z","references":{"url":["https://exploitbox.io/vuln/WordPress-Exploit-4-7-Unauth-Password-Reset-0day-CVE-2017-8295.html","http://blog.dewhurstsecurity.com/2017/05/04/exploitbox-wordpress-security-advisories.html"],"cve":["2017-8295"]},"vuln_type":"UNKNOWN","fixed_in":null}]}}',
 			$response->get_body()
 		);
+	}
+
+	/** @test */
+	function it_throws_for_unknown_package_types() {
+		$this->setExpectedException( 'InvalidArgumentException' );
+
+		$response = $this->api_client->check( new Package( 'test', 'fake', '0.1.0' ) );
 	}
 }

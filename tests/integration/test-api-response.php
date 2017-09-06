@@ -1,15 +1,19 @@
 <?php
 
+use Soter_Core\Package;
 use Soter_Core\Api_Response;
 
 class Api_Response_Test extends WP_UnitTestCase {
 	/** @test */
 	function it_generates_error_array_for_non_200_responses() {
-		list( $status, $headers, $body ) = sct_get_http_fixture_array(
-			'/non-200-response'
-		);
+		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-200-response' );
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response(
+			$status,
+			$headers,
+			$body,
+			new Package( 'test', 'plugin', '0.1.0' )
+		);
 
 		$this->assertEquals(
 			'Non-200 status code received',
@@ -19,11 +23,14 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_generates_error_array_for_non_json_responses() {
-		list( $status, $headers, $body ) = sct_get_http_fixture_array(
-			'/non-json-response'
-		);
+		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-json-response' );
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response(
+			$status,
+			$headers,
+			$body,
+			new Package( 'test', 'plugin', '0.1.0' )
+		);
 
 		$this->assertEquals(
 			'Received non-JSON response',
@@ -33,14 +40,36 @@ class Api_Response_Test extends WP_UnitTestCase {
 
 	/** @test */
 	function it_generates_error_array_for_invalid_json_responses() {
-		list( $status, $headers, $body ) = sct_get_http_fixture_array(
-			'/invalid-json-response'
-		);
+		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/invalid-json-response' );
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response(
+			$status,
+			$headers,
+			$body,
+			new Package( 'test', 'plugin', '0.1.0' )
+		);
 
 		$this->assertEquals(
 			'Response does not appear to be valid JSON',
+			$response->error['message']
+		);
+	}
+
+	/** @test */
+	function it_generates_error_when_response_slug_does_not_match_package_slug() {
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
+			'/api/v2/plugins/contact-form-7'
+		);
+
+		$response = new Api_Response(
+			$status,
+			$headers,
+			$body,
+			new Package( 'test', 'plugin', '0.1.0' )
+		);
+
+		$this->assertEquals(
+			'Response slug does not match package slug',
 			$response->error['message']
 		);
 	}
@@ -51,7 +80,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertEquals( '4.7', $response->latest_version );
 		$this->assertEquals(
@@ -60,7 +89,6 @@ class Api_Response_Test extends WP_UnitTestCase {
 		);
 		$this->assertTrue( $response->popular );
 		$this->assertSame( 2, count( $response->vulnerabilities ) );
-		$this->assertEquals( 'contact-form-7', $response->slug );
 	}
 
 	/** @test */
@@ -69,7 +97,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertEquals(
 			'{"contact-form-7":{"latest_version":"4.7","last_updated":"2017-03-03T19:28:00.000Z","popular":true,"vulnerabilities":[{"id":7020,"title":"Contact Form 7 <= 3.7.1 - Security Bypass ","created_at":"2014-08-01T10:59:06.000Z","updated_at":"2015-05-15T13:48:25.000Z","published_date":null,"references":{"url":["http://www.securityfocus.com/bid/66381/"],"cve":["2014-2265"]},"vuln_type":"AUTHBYPASS","fixed_in":"3.7.2"},{"id":7022,"title":"Contact Form 7 <= 3.5.2 - File Upload Remote Code Execution","created_at":"2014-08-01T10:59:07.000Z","updated_at":"2015-05-15T13:48:25.000Z","published_date":null,"references":{"url":["http://packetstormsecurity.com/files/124154/"]},"vuln_type":"UPLOAD","fixed_in":"3.5.3"}]}}',
@@ -83,7 +111,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
 		$data = $response->get_data();
 
 		$this->assertEquals( '4.7', $data['latest_version'] );
@@ -93,7 +121,6 @@ class Api_Response_Test extends WP_UnitTestCase {
 		);
 		$this->assertTrue( $data['popular'] );
 		$this->assertSame( 2, count( $data['vulnerabilities'] ) );
-		$this->assertEquals( 'contact-form-7', $data['slug'] );
 	}
 
 	/** @test */
@@ -102,7 +129,7 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -130,12 +157,24 @@ class Api_Response_Test extends WP_UnitTestCase {
 	}
 
 	/** @test */
+	function it_provides_access_to_package() {
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
+			'/api/v2/plugins/contact-form-7'
+		);
+
+		$package = $this->make_cf7_package();
+		$response = new Api_Response( $status, $headers, $body, $package );
+
+		$this->assertSame( $package, $response->get_package() );
+	}
+
+	/** @test */
 	function it_provides_access_to_raw_status() {
 		list( $status, $headers, $body ) = sct_get_http_fixture_array(
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertSame( 200, $response->get_status() );
 	}
@@ -146,18 +185,21 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		$this->assertSame( 2, count( $response->get_vulnerabilities() ) );
 	}
 
 	/** @test */
 	function it_returns_an_empty_array_when_there_are_no_vulnerabilities() {
-		list( $status, $headers, $body ) = sct_get_http_fixture_array(
-			'/non-200-response'
-		);
+		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-200-response' );
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response(
+			$status,
+			$headers,
+			$body,
+			new Package( 'test', 'plugin', '0.1.0' )
+		);
 
 		$this->assertSame( array(), $response->get_vulnerabilities() );
 	}
@@ -168,44 +210,56 @@ class Api_Response_Test extends WP_UnitTestCase {
 			'/api/v2/plugins/contact-form-7'
 		);
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
 
 		// No version specified - Should return all vulnerabilities.
 		$this->assertSame( 2, count( $response->get_vulnerabilities_by_version() ) );
 
-		$this->assertSame(
-			2,
-			count( $response->get_vulnerabilities_by_version( '3.5' ) )
+		$this->assertSame( 2, count( $response->get_vulnerabilities_by_version( '3.5' ) ) );
+		$this->assertSame( 1, count( $response->get_vulnerabilities_by_version( '3.7' ) ) );
+		$this->assertSame( 0, count( $response->get_vulnerabilities_by_version( '4.7' ) ) );
+	}
+
+	/** @test */
+	function it_provides_access_to_vulnerabilities_of_current_package_version() {
+		list( $status, $headers, $body ) = sct_get_http_fixture_array(
+			'/api/v2/plugins/contact-form-7'
 		);
-		$this->assertSame(
-			1,
-			count( $response->get_vulnerabilities_by_version( '3.7' ) )
-		);
-		$this->assertSame(
-			0,
-			count( $response->get_vulnerabilities_by_version( '4.7' ) )
-		);
+
+		$response = new Api_Response( $status, $headers, $body, $this->make_cf7_package() );
+
+		$this->assertSame( 1, count( $response->get_vulnerabilities_for_current_version() ) );
 	}
 
 	/** @test */
 	function it_knows_when_there_are_no_vulnerabilities() {
-		list( $status, $headers, $body ) = sct_get_http_fixture_array(
-			'/non-200-response'
-		);
+		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-200-response' );
 
-		$response = new Api_Response( $status, $headers, $body );
+		$response = new Api_Response(
+			$status,
+			$headers,
+			$body,
+			new Package( 'test', 'plugin', '0.1.0' )
+		);
 
 		$this->assertFalse( $response->has_vulnerabilities() );
 	}
 
 	/** @test */
 	function it_knows_when_there_has_been_an_error() {
-		list( $status, $headers, $body ) = sct_get_http_fixture_array(
-			'/non-200-response'
+		list( $status, $headers, $body ) = sct_get_http_fixture_array( '/non-200-response' );
+
+		$response = new Api_Response(
+			$status,
+			$headers,
+			$body,
+			new Package( 'test', 'plugin', '0.1.0' )
 		);
 
-		$response = new Api_Response( $status, $headers, $body );
-
 		$this->assertTrue( $response->is_error() );
+	}
+
+	protected function make_cf7_package() {
+		return new Package( 'contact-form-7', Package::TYPE_PLUGIN, '3.7' );
 	}
 }
