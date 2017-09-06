@@ -43,11 +43,7 @@ class Composer_Package_Manager implements Package_Manager_Interface {
 	 * @return Package[]
 	 */
 	public function get_packages() {
-		return array_merge(
-			$this->get_plugins(),
-			$this->get_themes(),
-			$this->get_wordpresses()
-		);
+		return array_merge( $this->get_plugins(), $this->get_themes(), $this->get_wordpresses() );
 	}
 
 	/**

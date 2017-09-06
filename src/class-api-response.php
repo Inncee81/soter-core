@@ -170,8 +170,7 @@ class Api_Response {
 	 * @return boolean
 	 */
 	public function has_vulnerabilities() {
-		return isset( $this->data['vulnerabilities'] )
-			&& $this->data['vulnerabilities']->not_empty();
+		return $this->data['vulnerabilities']->not_empty();
 	}
 
 	/**
@@ -190,14 +189,11 @@ class Api_Response {
 	 */
 	protected function generate_data() {
 		// May want to revisit - Non-200 does not automatically mean error.
-		if ( 200 !== $this->status ) {
+		if ( ! $this->is_success() ) {
 			return $this->generate_error( 'Non-200 status code received' );
 		}
 
-		if (
-			! isset( $this->headers['content-type'] )
-			|| false === strpos( $this->headers['content-type'], 'application/json' )
-		) {
+		if ( ! $this->is_json() ) {
 			return $this->generate_error( 'Received non-JSON response' );
 		}
 
@@ -254,5 +250,24 @@ class Api_Response {
 			),
 			'vulnerabilities' => new Vulnerabilities(),
 		);
+	}
+
+	/**
+	 * Check whether this response appears to be JSON.
+	 *
+	 * @return boolean
+	 */
+	protected function is_json() {
+		return isset( $this->headers['content-type'] )
+			&& false !== strpos( $this->headers['content-type'], 'application/json' );
+	}
+
+	/**
+	 * Check whether this response has a success status code.
+	 *
+	 * @return boolean
+	 */
+	protected function is_success() {
+		return 200 === $this->status;
 	}
 }

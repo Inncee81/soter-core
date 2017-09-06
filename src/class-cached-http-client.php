@@ -11,6 +11,8 @@ namespace Soter_Core;
  * Defines the cached HTTP client class.
  */
 class Cached_Http_Client implements Http_Interface {
+	const KEY = 'soter_core:v0.1.0:http:get:%s';
+
 	/**
 	 * Cache instance.
 	 *
@@ -44,8 +46,7 @@ class Cached_Http_Client implements Http_Interface {
 	 * @return array
 	 */
 	public function get( $url ) {
-		$url = (string) $url;
-		$key = "soter_core:http:get:{$url}";
+		$key = sprintf( self::KEY, $url );
 
 		$value = $this->cache->get( $key );
 

@@ -31,10 +31,7 @@ class Checker {
 	 * @param Api_Client                $client          API client instance.
 	 * @param Package_Manager_Interface $package_manager Package manager instance.
 	 */
-	public function __construct(
-		Api_Client $client,
-		Package_Manager_Interface $package_manager
-	) {
+	public function __construct( Api_Client $client, Package_Manager_Interface $package_manager ) {
 		$this->client = $client;
 		$this->package_manager = $package_manager;
 	}
@@ -96,10 +93,7 @@ class Checker {
 	 * @return Vulnerabilities
 	 */
 	public function check_plugins( array $ignored = array() ) {
-		return $this->check_packages(
-			$this->package_manager->get_plugins(),
-			$ignored
-		);
+		return $this->check_packages( $this->package_manager->get_plugins(), $ignored );
 	}
 
 	/**
@@ -110,10 +104,7 @@ class Checker {
 	 * @return Vulnerabilities
 	 */
 	public function check_site( array $ignored = array() ) {
-		return $this->check_packages(
-			$this->package_manager->get_packages(),
-			$ignored
-		);
+		return $this->check_packages( $this->package_manager->get_packages(), $ignored );
 	}
 
 	/**
@@ -124,10 +115,7 @@ class Checker {
 	 * @return Vulnerabilities
 	 */
 	public function check_themes( array $ignored = array() ) {
-		return $this->check_packages(
-			$this->package_manager->get_themes(),
-			$ignored
-		);
+		return $this->check_packages( $this->package_manager->get_themes(), $ignored );
 	}
 
 	/**
@@ -138,10 +126,7 @@ class Checker {
 	 * @return Vulnerabilities
 	 */
 	public function check_wordpress( array $ignored = array() ) {
-		return $this->check_packages(
-			$this->package_manager->get_wordpresses(),
-			$ignored
-		);
+		return $this->check_packages( $this->package_manager->get_wordpresses(), $ignored );
 	}
 
 	/**

@@ -132,9 +132,7 @@ class WP_Transient_Cache implements Cache_Interface {
 		$key = (string) $key;
 
 		if ( ! isset( $key[0] ) ) {
-			throw new \InvalidArgumentException(
-				'Cache key length must be greater than zero'
-			);
+			throw new \InvalidArgumentException( 'Cache key length must be greater than zero' );
 		}
 
 		$prefix = $this->cache_prefix();
