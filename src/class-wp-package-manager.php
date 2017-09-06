@@ -7,10 +7,24 @@
 
 namespace Soter_Core;
 
+use RuntimeException;
+
 /**
  * Defines the WP package manager class.
  */
 class WP_Package_Manager implements Package_Manager_Interface {
+	/**
+	 * Class constructor.
+	 *
+	 * @throws RuntimeException When instantiated outside of a WordPress context.
+	 */
+	public function __construct() {
+		if ( ! defined( 'ABSPATH' ) ) {
+			throw new RuntimeException(
+				sprintf( '%s can only be used within a WordPress context', __CLASS__ )
+			);
+		}
+	}
 	/**
 	 * Get a list of all installed packages.
 	 *
@@ -26,11 +40,6 @@ class WP_Package_Manager implements Package_Manager_Interface {
 	 * @return Package[]
 	 */
 	public function get_plugins() {
-		// Class is being used outside of WordPress. Throw instead?
-		if ( ! defined( 'ABSPATH' ) ) {
-			return array();
-		}
-
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -50,11 +59,6 @@ class WP_Package_Manager implements Package_Manager_Interface {
 	 * @return Package[]
 	 */
 	public function get_themes() {
-		// Class is being used outside of WordPress. Throw instead?
-		if ( ! function_exists( 'wp_get_themes' ) ) {
-			return array();
-		}
-
 		return array_values( array_map(
 			'Soter_Core\\Package::from_theme_object',
 			wp_get_themes()
@@ -67,11 +71,6 @@ class WP_Package_Manager implements Package_Manager_Interface {
 	 * @return Package[]
 	 */
 	public function get_wordpresses() {
-		// Class is being used outside of WordPress. Throw instead?
-		if ( ! function_exists( 'get_bloginfo' ) ) {
-			return array();
-		}
-
 		return array( Package::from_wordpress_env() );
 	}
 }
