@@ -112,7 +112,7 @@ class WP_Package_Manager_Test extends PHPUnit_Framework_TestCase {
 	}
 
 	protected static function get_plugins() {
-		$plugins = include __DIR__ . '/../fixtures/get-plugins.php';
+		$plugins = include __DIR__ . '/fixtures/get-plugins.php';
 
 		return $plugins;
 	}
