@@ -45,13 +45,8 @@ class Checker {
 	 */
 	public function check_package( Package $package ) {
 		$response = $this->client->check( $package );
-		$vulnerabilities = $response->get_vulnerabilities_for_current_version();
 
-		if ( function_exists( 'do_action' ) ) {
-			do_action( 'soter_core_check_package_complete', $vulnerabilities );
-		}
-
-		return $vulnerabilities;
+		return $response->get_vulnerabilities_for_current_version();
 	}
 
 	/**
@@ -76,10 +71,6 @@ class Checker {
 
 		foreach ( $packages as $package ) {
 			$vulnerabilities->merge_in( $this->check_package( $package ) );
-		}
-
-		if ( function_exists( 'do_action' ) ) {
-			do_action( 'soter_core_check_packages_complete', $vulnerabilities );
 		}
 
 		return $vulnerabilities;
