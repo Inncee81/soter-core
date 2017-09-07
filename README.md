@@ -4,7 +4,7 @@ Soter Core is a simple library for interacting with the [WPScan Vulnerability Da
 It contains the core logic used by my [Soter Plugin](https://github.com/ssnepenthe/soter) and [Soter WP-CLI Command](https://github.com/ssnepenthe/soter-command).
 
 ## Requirements
-Composer and PHP 5.3 or greater.
+This package requires Composer. It *should* work down to PHP 5.3, however it is only properly tested down to PHP 5.6 since that is the minimum required version for [10up/WP_Mock](https://github.com/10up/wp_mock).
 
 ## Installation
 ```
