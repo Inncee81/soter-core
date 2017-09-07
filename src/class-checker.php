@@ -67,10 +67,14 @@ class Checker {
 			);
 		}
 
-		$vulnerabilities = new Vulnerabilities();
+		$vulnerabilities = null;
 
 		foreach ( $packages as $package ) {
-			$vulnerabilities->merge_in( $this->check_package( $package ) );
+			if ( null === $vulnerabilities ) {
+				$vulnerabilities = $this->check_package( $package );
+			} else {
+				$vulnerabilities->merge_in( $this->check_package( $package ) );
+			}
 		}
 
 		return $vulnerabilities;
@@ -136,6 +140,15 @@ class Checker {
 	 */
 	public function get_package_count() {
 		return count( $this->package_manager->get_packages() );
+	}
+
+	/**
+	 * Package manager getter.
+	 *
+	 * @return Package_Manager_Interface
+	 */
+	public function get_package_manager() {
+		return $this->package_manager;
 	}
 
 	/**
