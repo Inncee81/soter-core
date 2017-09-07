@@ -200,7 +200,9 @@ class Response {
 		$decoded = json_decode( $this->body, true );
 
 		if ( null === $decoded || JSON_ERROR_NONE !== json_last_error() ) {
-			return $this->generate_error( 'Response does not appear to be valid JSON' );
+			return $this->generate_error(
+				'Error decoding response JSON: ' . json_last_error_msg()
+			);
 		}
 
 		$data = current( $decoded );
