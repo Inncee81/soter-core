@@ -14,28 +14,28 @@ interface Package_Manager_Interface {
 	/**
 	 * Get a list of all plugins, themes and WordPresses.
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_packages();
 
 	/**
 	 * Get a list of all plugins.
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_plugins();
 
 	/**
 	 * Get a list of all themes.
 	 *
-	 * @return Package_Inteface[]
+	 * @return Package[]
 	 */
 	public function get_themes();
 
 	/**
 	 * Get a list of all WordPresses.
 	 *
-	 * @return Package_Interface[]
+	 * @return Package[]
 	 */
 	public function get_wordpresses();
 }

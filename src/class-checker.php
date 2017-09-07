@@ -7,29 +7,16 @@
 
 namespace Soter_Core;
 
-use WP_Theme;
-
 /**
  * Defines the checker class.
  */
-class Checker implements Checker_Interface {
+class Checker {
 	/**
 	 * API client instance.
 	 *
-	 * @var Client_Interface
+	 * @var Api_Client
 	 */
 	protected $client;
-
-	/**
-	 * Map of package types to API client methods.
-	 *
-	 * @var string[]
-	 */
-	protected $method_map = array(
-		'plugin' => 'plugins',
-		'theme' => 'themes',
-		'wordpress' => 'wordpresses',
-	);
 
 	/**
 	 * Package manager instance.
@@ -41,13 +28,10 @@ class Checker implements Checker_Interface {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Client_Interface          $client          API client instance.
+	 * @param Api_Client                $client          API client instance.
 	 * @param Package_Manager_Interface $package_manager Package manager instance.
 	 */
-	public function __construct(
-		Client_Interface $client,
-		Package_Manager_Interface $package_manager
-	) {
+	public function __construct( Api_Client $client, Package_Manager_Interface $package_manager ) {
 		$this->client = $client;
 		$this->package_manager = $package_manager;
 	}
@@ -55,37 +39,23 @@ class Checker implements Checker_Interface {
 	/**
 	 * Check a single package.
 	 *
-	 * @param  Package_Interface $package Package instance.
+	 * @param  Package $package Package instance.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
-	public function check_package( Package_Interface $package ) {
-		$client_method = $this->get_client_method( $package );
+	public function check_package( Package $package ) {
+		$response = $this->client->check( $package );
 
-		$response = $this->client->{$client_method}( $package->get_slug() );
-
-		$vulnerabilities = $response->get_vulnerabilities_by_version(
-			$package->get_version()
-		);
-
-		if ( function_exists( 'do_action' ) ) {
-			do_action(
-				'soter_core_check_package_complete',
-				$package,
-				$vulnerabilities
-			);
-		}
-
-		return $vulnerabilities;
+		return $response->get_vulnerabilities_for_current_version();
 	}
 
 	/**
 	 * Check multiple packages.
 	 *
-	 * @param  Package_Interface[] $packages List of Package instances.
-	 * @param  string[]            $ignored  List of package slugs to ignore.
+	 * @param  Package[] $packages List of Package instances.
+	 * @param  string[]  $ignored  List of package slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_packages( array $packages, array $ignored = array() ) {
 		if ( ! empty( $ignored ) ) {
@@ -97,19 +67,14 @@ class Checker implements Checker_Interface {
 			);
 		}
 
-		$vulnerabilities = array();
+		$vulnerabilities = null;
 
 		foreach ( $packages as $package ) {
-			$vulnerabilities = array_merge(
-				$vulnerabilities,
-				$this->check_package( $package )
-			);
-		}
-
-		$vulnerabilities = array_unique( $vulnerabilities );
-
-		if ( function_exists( 'do_action' ) ) {
-			do_action( 'soter_core_check_packages_complete', $vulnerabilities );
+			if ( null === $vulnerabilities ) {
+				$vulnerabilities = $this->check_package( $package );
+			} else {
+				$vulnerabilities->merge_in( $this->check_package( $package ) );
+			}
 		}
 
 		return $vulnerabilities;
@@ -120,13 +85,10 @@ class Checker implements Checker_Interface {
 	 *
 	 * @param string[] $ignored List of plugin slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_plugins( array $ignored = array() ) {
-		return $this->check_packages(
-			$this->package_manager->get_plugins(),
-			$ignored
-		);
+		return $this->check_packages( $this->package_manager->get_plugins(), $ignored );
 	}
 
 	/**
@@ -134,13 +96,10 @@ class Checker implements Checker_Interface {
 	 *
 	 * @param string[] $ignored List of package slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_site( array $ignored = array() ) {
-		return $this->check_packages(
-			$this->package_manager->get_packages(),
-			$ignored
-		);
+		return $this->check_packages( $this->package_manager->get_packages(), $ignored );
 	}
 
 	/**
@@ -148,13 +107,10 @@ class Checker implements Checker_Interface {
 	 *
 	 * @param string[] $ignored List of theme slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_themes( array $ignored = array() ) {
-		return $this->check_packages(
-			$this->package_manager->get_themes(),
-			$ignored
-		);
+		return $this->check_packages( $this->package_manager->get_themes(), $ignored );
 	}
 
 	/**
@@ -162,19 +118,16 @@ class Checker implements Checker_Interface {
 	 *
 	 * @param string[] $ignored List of WordPress slugs to ignore.
 	 *
-	 * @return Vulnerability_Interface[]
+	 * @return Vulnerabilities
 	 */
 	public function check_wordpress( array $ignored = array() ) {
-		return $this->check_packages(
-			$this->package_manager->get_wordpresses(),
-			$ignored
-		);
+		return $this->check_packages( $this->package_manager->get_wordpresses(), $ignored );
 	}
 
 	/**
 	 * Get the API client instance.
 	 *
-	 * @return Client_Interface
+	 * @return Api_Client
 	 */
 	public function get_client() {
 		return $this->client;
@@ -187,6 +140,15 @@ class Checker implements Checker_Interface {
 	 */
 	public function get_package_count() {
 		return count( $this->package_manager->get_packages() );
+	}
+
+	/**
+	 * Package manager getter.
+	 *
+	 * @return Package_Manager_Interface
+	 */
+	public function get_package_manager() {
+		return $this->package_manager;
 	}
 
 	/**
@@ -214,24 +176,5 @@ class Checker implements Checker_Interface {
 	 */
 	public function get_wordpress_count() {
 		return count( $this->package_manager->get_wordpresses() );
-	}
-
-	/**
-	 * Get the appropriate API client method for a given package.
-	 *
-	 * @param  Package_Interface $package Package instance.
-	 *
-	 * @return string
-	 *
-	 * @throws \InvalidArgumentException When there is no matching method for a type.
-	 */
-	protected function get_client_method( Package_Interface $package ) {
-		if ( isset( $this->method_map[ $package->get_type() ] ) ) {
-			return $this->method_map[ $package->get_type() ];
-		}
-
-		throw new \InvalidArgumentException(
-			"Unsupported package type [{$package->get_type()}]"
-		);
 	}
 }

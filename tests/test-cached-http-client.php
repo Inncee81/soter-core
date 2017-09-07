@@ -1,18 +1,19 @@
 <?php
 
+use Soter_Core\Http_Interface;
+use Soter_Core\Cache_Interface;
 use Soter_Core\Cached_Http_Client;
 
-class Cached_Http_Client_Test extends PHPUnit_Framework_TestCase {
-	function tearDown() {
-		Mockery::close();
-	}
-
+/**
+ * @todo Link version in cache key to current package version.
+ */
+class Cached_Http_Client_Test extends WP_Mock\Tools\TestCase {
 	/** @test */
 	function it_checks_for_cached_response_first() {
-		$http = Mockery::mock( 'Soter_Core\\Http_Interface' );
-		$cache = Mockery::mock( 'Soter_Core\\Cache_Interface' )
+		$http = Mockery::mock( Http_Interface::class );
+		$cache = Mockery::mock( Cache_Interface::class )
 			->shouldReceive( 'get' )
-			->with( 'soter_core:http:get:testing' )
+			->with( 'soter_core:v0.2.0:http:get:testing' )
 			->once()
 			->andReturn( 'cached-response' )
 			->getMock();
@@ -32,11 +33,11 @@ class Cached_Http_Client_Test extends PHPUnit_Framework_TestCase {
 			->getMock();
 		$cache = Mockery::mock( 'Soter_Core\\Cache_Interface' )
 			->shouldReceive( 'get' )
-			->with( 'soter_core:http:get:testing' )
+			->with( 'soter_core:v0.2.0:http:get:testing' )
 			->once()
 			->andReturnNull()
 			->shouldReceive( 'put' )
-			->with( 'soter_core:http:get:testing', 'fresh-response' )
+			->with( 'soter_core:v0.2.0:http:get:testing', 'fresh-response' )
 			->once()
 			->getMock();
 

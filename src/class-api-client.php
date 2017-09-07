@@ -7,11 +7,13 @@
 
 namespace Soter_Core;
 
+use InvalidArgumentException;
+
 /**
  * Defines the API client class.
  */
-class Api_Client implements Client_Interface {
-	const BASE_URL = 'https://wpvulndb.com/api/v2/';
+class Api_Client {
+	const BASE_URL = 'https://wpvulndb.com/api/v2';
 
 	/**
 	 * HTTP client.
@@ -19,6 +21,17 @@ class Api_Client implements Client_Interface {
 	 * @var  Http_Interface
 	 */
 	protected $http;
+
+	/**
+	 * Map of package types to API routes.
+	 *
+	 * @var array
+	 */
+	protected $route_map = [
+		'plugin' => 'plugins',
+		'theme' => 'themes',
+		'wordpress' => 'wordpresses',
+	];
 
 	/**
 	 * Class constructor.
@@ -30,50 +43,45 @@ class Api_Client implements Client_Interface {
 	}
 
 	/**
-	 * Makes a request to the plugins endpoint.
+	 * Check a package instance against the API.
 	 *
-	 * @param  string $slug Plugin slug.
+	 * @param  Package $package Package instance.
 	 *
-	 * @return Response_Interface
+	 * @return Response
 	 */
-	public function plugins( $slug ) {
-		return $this->get( 'plugins/' . $slug );
+	public function check( Package $package ) {
+		list( $status, $headers, $body ) = $this->http->get( $this->build_url_for( $package ) );
+
+		return new Response( $status, $headers, $body, $package );
 	}
 
 	/**
-	 * Make a request to the themes endpoint.
+	 * Build the API URL for a given package.
 	 *
-	 * @param  string $slug Theme slug.
+	 * @param  Package $package Package instance.
 	 *
-	 * @return Response_Interface
+	 * @return string
 	 */
-	public function themes( $slug ) {
-		return $this->get( 'themes/' . $slug );
+	protected function build_url_for( Package $package ) {
+		return self::BASE_URL . '/' . $this->get_route_for( $package ) . '/' . $package->get_slug();
 	}
 
 	/**
-	 * Make a request to the WordPresses endpoint.
+	 * Get the API route for a given package.
 	 *
-	 * @param  string $slug WordPress slug (aka version stripped of "." characters).
+	 * @param  Package $package Package instance.
 	 *
-	 * @return Response_Interface
+	 * @return string
+	 *
+	 * @throws InvalidArgumentException When $package is of an unsupported type.
 	 */
-	public function wordpresses( $slug ) {
-		return $this->get( 'wordpresses/' . $slug );
-	}
+	protected function get_route_for( Package $package ) {
+		if ( ! isset( $this->route_map[ $package->get_type() ] ) ) {
+			throw new InvalidArgumentException(
+				"Unsupported package type [{$package->get_type()}]"
+			);
+		}
 
-	/**
-	 * Make a get request against the given endpoint.
-	 *
-	 * @param  string $endpoint API endpoint.
-	 *
-	 * @return Response_Interface
-	 */
-	protected function get( $endpoint ) {
-		$url = self::BASE_URL . (string) $endpoint;
-
-		list( $status, $headers, $body ) = $this->http->get( $url );
-
-		return new Api_Response( $status, $headers, $body );
+		return $this->route_map[ $package->get_type() ];
 	}
 }

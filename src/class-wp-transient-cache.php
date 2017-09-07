@@ -7,8 +7,6 @@
 
 namespace Soter_Core;
 
-use wpdb;
-
 /**
  * Defines the WP transient cache class.
  */
@@ -34,21 +32,22 @@ class WP_Transient_Cache implements Cache_Interface {
 	 *
 	 * Requires WP >= 4.4 for transient key length of 172 characters.
 	 *
-	 * @param wpdb         $db               WordPress database instance.
 	 * @param string       $prefix           Cache prefix string.
 	 * @param null|integer $default_lifetime Default cache entry lifetime.
 	 *
 	 * @throws \InvalidArgumentException When length of $prefix exceeds max allowed.
 	 */
-	public function __construct( $prefix = '', $default_lifetime = null ) {
+	public function __construct( $prefix = '', $default_lifetime = 0 ) {
 		// 40 for length of sha1, additional 1 for "_" separator.
 		if ( self::MAX_KEY_LENGTH - 40 - 1 < strlen( $prefix ) ) {
-			throw new \InvalidArgumentException( sprintf(
-				'Provided prefix [%s, length of %s] exceeds maximum length of %s',
-				$prefix,
-				strlen( $prefix ),
-				self::MAX_KEY_LENGTH
-			) );
+			throw new \InvalidArgumentException(
+				sprintf(
+					'Provided prefix [%s, length of %s] exceeds maximum length of %s',
+					$prefix,
+					strlen( $prefix ),
+					self::MAX_KEY_LENGTH
+				)
+			);
 		}
 
 		$this->prefix = (string) $prefix;
@@ -133,9 +132,7 @@ class WP_Transient_Cache implements Cache_Interface {
 		$key = (string) $key;
 
 		if ( ! isset( $key[0] ) ) {
-			throw new \InvalidArgumentException(
-				'Cache key length must be greater than zero'
-			);
+			throw new \InvalidArgumentException( 'Cache key length must be greater than zero' );
 		}
 
 		$prefix = $this->cache_prefix();
@@ -154,6 +151,8 @@ class WP_Transient_Cache implements Cache_Interface {
 	 * @param  null|integer $lifetime The cache lifetime.
 	 *
 	 * @return integer
+	 *
+	 * @todo This is weird/wrong... Only allows a lifetime of 0 (forever) if it is the default.
 	 */
 	protected function item_lifetime( $lifetime ) {
 		if ( is_null( $lifetime ) ) {
