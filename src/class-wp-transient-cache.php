@@ -37,7 +37,7 @@ class WP_Transient_Cache implements Cache_Interface {
 	 *
 	 * @throws \InvalidArgumentException When length of $prefix exceeds max allowed.
 	 */
-	public function __construct( $prefix = '', $default_lifetime = null ) {
+	public function __construct( $prefix = '', $default_lifetime = 0 ) {
 		// 40 for length of sha1, additional 1 for "_" separator.
 		if ( self::MAX_KEY_LENGTH - 40 - 1 < strlen( $prefix ) ) {
 			throw new \InvalidArgumentException(
@@ -151,6 +151,8 @@ class WP_Transient_Cache implements Cache_Interface {
 	 * @param  null|integer $lifetime The cache lifetime.
 	 *
 	 * @return integer
+	 *
+	 * @todo This is weird/wrong... Only allows a lifetime of 0 (forever) if it is the default.
 	 */
 	protected function item_lifetime( $lifetime ) {
 		if ( is_null( $lifetime ) ) {
