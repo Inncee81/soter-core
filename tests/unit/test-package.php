@@ -50,8 +50,8 @@ class Package_Test extends WP_Mock\Tools\TestCase {
 	function it_can_be_created_from_current_wp_environment() {
 		WP_Mock::userFunction( 'get_bloginfo', [
 			'args' => 'version',
-			'times' => 1,
 			'return' => '4.8.1',
+			'times' => 1,
 		] );
 
 		$package = Package::from_wordpress_env();

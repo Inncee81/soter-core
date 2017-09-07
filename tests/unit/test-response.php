@@ -175,13 +175,6 @@ class Response_Test extends WP_Mock\Tools\TestCase {
 
 	/** @test */
 	function it_knows_when_there_has_been_an_error() {
-		list( $no_status, $no_headers, $no_body ) = sct_get_http_fixture_array(
-			'/api/v2/plugins/contact-form-7'
-		);
-		list( $yes_status, $yes_headers, $yes_body ) = sct_get_http_fixture_array(
-			'/non-200-response'
-		);
-
 		$no_error = $this->make_cf7_response();
 		$yes_error = new Response( self::STATUS_FAILURE, [], '', Mockery::mock( Package::class ) );
 
