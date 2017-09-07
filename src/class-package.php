@@ -89,7 +89,7 @@ class Package {
 	 *
 	 * @return static
 	 */
-	public static function from_plugin_array( string $file, array $headers ) {
+	public static function from_plugin_array( $file, array $headers ) {
 		if ( false === strpos( $file, '/' ) ) {
 			$slug = basename( $file, '.php' );
 		} else {
