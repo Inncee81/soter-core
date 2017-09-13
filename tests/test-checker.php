@@ -9,6 +9,7 @@ use Soter_Core\Package_Manager_Interface;
 
 /**
  * @todo Add tests for type-specific methods.
+ *       These mock chains are a bit ridiculous...
  */
 class Checker_Test extends WP_Mock\Tools\TestCase {
 	/** @test */
@@ -49,6 +50,13 @@ class Checker_Test extends WP_Mock\Tools\TestCase {
 					Mockery::mock( Response::class )
 						->shouldReceive( 'get_vulnerabilities_for_current_version' )
 						->once()
+						->andReturn(
+							Mockery::mock( Vulnerabilities::class )
+								->shouldReceive( 'all' )
+								->once()
+								->andReturn( [] )
+								->getMock()
+						)
 						->getMock()
 				)
 				->shouldReceive( 'check' )
@@ -58,6 +66,13 @@ class Checker_Test extends WP_Mock\Tools\TestCase {
 					Mockery::mock( Response::class )
 						->shouldReceive( 'get_vulnerabilities_for_current_version' )
 						->once()
+						->andReturn(
+							Mockery::mock( Vulnerabilities::class )
+								->shouldReceive( 'all' )
+								->once()
+								->andReturn( [] )
+								->getMock()
+						)
 						->getMock()
 				)
 				->getMock(),
@@ -92,6 +107,13 @@ class Checker_Test extends WP_Mock\Tools\TestCase {
 					Mockery::mock( Response::class )
 						->shouldReceive( 'get_vulnerabilities_for_current_version' )
 						->once()
+						->andReturn(
+							Mockery::mock( Vulnerabilities::class )
+								->shouldReceive( 'all' )
+								->once()
+								->andReturn( [] )
+								->getMock()
+						)
 						->getMock()
 				)
 				->getMock(),

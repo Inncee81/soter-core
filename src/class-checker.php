@@ -67,14 +67,10 @@ class Checker {
 			);
 		}
 
-		$vulnerabilities = null;
+		$vulnerabilities = new Vulnerabilities();
 
 		foreach ( $packages as $package ) {
-			if ( null === $vulnerabilities ) {
-				$vulnerabilities = $this->check_package( $package );
-			} else {
-				$vulnerabilities->merge_in( $this->check_package( $package ) );
-			}
+			$vulnerabilities->merge_in( $this->check_package( $package ) );
 		}
 
 		return $vulnerabilities;
