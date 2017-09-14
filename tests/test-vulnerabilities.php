@@ -63,6 +63,18 @@ class Vulnerabilities_Test extends WP_Mock\Tools\TestCase {
 	}
 
 	/** @test */
+	function it_can_return_custom_array_values_for_each_vulnerability() {
+		$collection = new Vulnerabilities( $this->vulnerabilities );
+
+		// Bad example - you would use ->pluck() instead. But it makes the point fine for testing.
+		$ids = $collection->each( function( $vulnerability ) {
+			return $vulnerability->id;
+		} );
+
+		$this->assertEquals( [ 100, 200 ], $ids );
+	}
+
+	/** @test */
 	function it_is_filterable() {
 		$one = Mockery::mock( Vulnerability::class )
 			->shouldReceive( 'affects_version' )

@@ -85,6 +85,25 @@ class Vulnerabilities implements IteratorAggregate, Countable {
 	}
 
 	/**
+	 * Call an anonymous function on each value in the vulnerability list. Returns an array of
+	 * the values that are returned by the anonymous function.
+	 *
+	 * @param  Closure $callback Callback to apply to each vulnerability.
+	 *
+	 * @return array
+	 */
+	public function each( Closure $callback ) {
+		$return = array();
+
+		foreach ( $this->vulnerabilities as $vulnerability ) {
+			// Ideally would pass index as well but in this case index === $vulnerability->id.
+			$return[] = $callback( $vulnerability );
+		}
+
+		return $return;
+	}
+
+	/**
 	 * Create a filtered-down vulnerabilites collection.
 	 *
 	 * @param  Closure $callback Filter callback.
