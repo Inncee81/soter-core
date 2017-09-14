@@ -1,10 +1,10 @@
 # soter-core
 Soter Core is a simple library for interacting with the [WPScan Vulnerability Database](https://wpvulndb.com/) API.
 
-It contains the core logic used by my [Soter Plugin](https://github.com/ssnepenthe/soter) and [Soter WP-CLI Command](https://github.com/ssnepenthe/soter-command).
+It contains the core logic for [Soter](https://github.com/ssnepenthe/soter) and [Soter Command](https://github.com/ssnepenthe/soter-command).
 
 ## Requirements
-This package requires Composer. It *should* work down to PHP 5.3, however it is only properly tested down to PHP 5.6 since that is the minimum required version for [10up/WP_Mock](https://github.com/10up/wp_mock).
+This package requires Composer. It *should* work down to PHP 5.3, however it is only properly tested down to PHP 5.6 since that is now the minimum required version for [10up/WP_Mock](https://github.com/10up/wp_mock).
 
 ## Installation
 ```
@@ -15,7 +15,7 @@ composer require ssnepenthe/soter-core
 Depending on your use-case, you should be interacting with either the `Api_Client` class or the `Checker` class.
 
 ### API Client
-```
+```PHP
 $client = new Soter_Core\Api_Client(
     new Soter_Core\Cached_Http_Client(
         new Soter_Core\WP_Http_Client( 'Some user agent string' ),
@@ -24,9 +24,9 @@ $client = new Soter_Core\Api_Client(
 );
 ```
 
-The API client can check a `Soter_Core\Package` instance against the API:
+The API client exposes a `->check()` method which can be used to check a `Soter_Core\Package` instance against the API:
 
-```
+```PHP
 $plugin = new Soter_Core\Package( 'contact-form-7', Soter_Core\Package::TYPE_PLUGIN, '4.9' );
 $response = $client->check( $plugin );
 
@@ -42,14 +42,14 @@ Responses will be an instance of `Soter_Core\Response`. You can check package vu
 
 `->has_vulnerabilities()` - Returns a boolean value indicating whether there are any recorded vulnerabilities for a given package.
 
-`->get_vulnerabilities()` - Returns an instance of the `Soter_Core\Vulnerabilities` collection object representing all vulnerabilities that have ever affected a given package.
+`->get_vulnerabilities()` - Returns an instance of `Soter_Core\Vulnerabilities` representing all vulnerabilities that have ever affected a given package.
 
-`->get_vulnerabilities_by_version( string $version = null )` - Returns an instance of the `Soter_Core\Vulnerabilities` collection object representing all vulnerabilities which affect a given package at the given version.
+`->get_vulnerabilities_by_version( string $version = null )` - Returns an instance of `Soter_Core\Vulnerabilities` representing all vulnerabilities which affect a given package at the given version.
 
-`->get_vulnerabilities_for_current_version()` - Returns an instance of the `Soter_Core\Vulnerabilities` collection object representing all vulnerabilities which affect a given package at the version checked against the API.
+`->get_vulnerabilities_for_current_version()` - Returns an instance of `Soter_Core\Vulnerabilities` representing all vulnerabilities which affect a given package at the version checked against the API.
 
 ### Checker
-```
+```PHP
 $checker = new Soter_Core\Checker(
     new Soter_Core\Api_Client(
         new Soter_Core\Cached_Http_Client(
@@ -61,7 +61,7 @@ $checker = new Soter_Core\Checker(
 );
 ```
 
-Your interaction with a checker instance should be through the following methods:
+The following methods are available on a checker instance:
 
 `->check_site( array $ignored = array() )` - Checks the current version of all installed packages (plugins, themes and core) and returns an instance of `Soter_Core\Vulnerabilities`. An optional array of package slugs that should not be checked can be provided.
 
@@ -70,3 +70,24 @@ Your interaction with a checker instance should be through the following methods
 `->check_themes( array $ignored = array() )` - Checks the current version of all installed themes and returns an instance of `Soter_Core\Vulnerabilities`. An optional array of theme slugs that should not be checked can be provided.
 
 `->check_wordpress( array $ignored = array() )` - Checks the current version of WordPress and returns an instance of `Soter_Core\Vulnerabilities`. An optional array of WordPress "slugs" that should not be checked can be provided. Keep in mind that the slug used for WordPress is the version string stripped of periods (e.g. '475' for version 4.7.5).
+
+You can also add any number of callbacks to be run after each package is checked.
+
+Each callback will be called with a `Soter_Core\Vulnerabilities` instance and a `Soter_Core\Response` instance.
+
+As a simple example, you might do something like the following to log error responses for debugging purposes:
+
+```PHP
+$checker->add_post_check_callback( function( $vulnerabilities, $response ) {
+    if ( ! $response->is_error() ) {
+        return;
+    }
+
+    // Ex: "Error checking plugin not-a-real-plugin with message: Non-200 status code received"
+    $this->logger->debug( 'Error checking {type} {slug} with message: {message}', [
+        'message' => $response->error['message'],
+        'slug' => $response->get_package()->get_slug(),
+        'type' => $response->get_package()->get_type(),
+    ] );
+} );
+```
