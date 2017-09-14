@@ -123,4 +123,65 @@ class Checker_Test extends WP_Mock\Tools\TestCase {
 		// No assertions - checking that everything is called for first package, not second.
 		$vulns = $checker->check_packages( $packages, array( 'twentyfifteen' ) );
 	}
+
+	/** @test */
+	function it_triggers_callback_after_every_package_check() {
+		$vulnerabilities = Mockery::mock( Vulnerabilities::class );
+		$response = Mockery::mock( Response::class )
+			->shouldReceive( 'get_vulnerabilities_for_current_version' )
+			->twice()
+			->andReturn( $vulnerabilities )
+			->getMock();
+		$checker = new Checker(
+			Mockery::mock( Api_Client::class )
+				->shouldReceive( 'check' )
+				->twice()
+				->andReturn( $response )
+				->getMock(),
+			Mockery::mock( Package_Manager_Interface::class )
+		);
+		$package1 = Mockery::mock( Package::class );
+		$package2 = Mockery::mock( Package::class );
+		$call_count = 0;
+
+		$checker->add_post_check_callback(
+			function( $vulns, $resp ) use ( $vulnerabilities, $response, &$call_count ) {
+				$call_count++;
+				$this->assertSame( $vulnerabilities, $vulns );
+				$this->assertSame( $response, $resp );
+			}
+		);
+		$checker->check_package( $package1 );
+		$checker->check_package( $package2 );
+
+		$this->assertSame( 2, $call_count );
+	}
+
+	/** @test */
+	function it_can_trigger_multiple_callbacks() {
+		$vulnerabilities = Mockery::mock( Vulnerabilities::class );
+		$response = Mockery::mock( Response::class )
+			->shouldReceive( 'get_vulnerabilities_for_current_version' )
+			->once()
+			->andReturn( $vulnerabilities )
+			->getMock();
+		$checker = new Checker(
+			Mockery::mock( Api_Client::class )
+				->shouldReceive( 'check' )
+				->once()
+				->andReturn( $response )
+				->getMock(),
+			Mockery::mock( Package_Manager_Interface::class )
+		);
+		$package = Mockery::mock( Package::class );
+
+		$checker->add_post_check_callback( function( $vulns ) use ( $vulnerabilities ) {
+			$this->assertSame( $vulnerabilities, $vulns );
+		} );
+		$checker->add_post_check_callback( function( $_, $resp ) use ( $response ) {
+			$this->assertSame( $response, $resp );
+		} );
+
+		$checker->check_package( $package );
+	}
 }
