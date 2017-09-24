@@ -214,9 +214,12 @@ class Response {
 		}
 
 		if ( isset( $data['last_updated'] ) ) {
-			$data['last_updated'] = new DateTime(
-				$data['last_updated']
-			);
+			// I've not yet run into an invalid timestamp on WPVulnDB, but just in case...
+			try {
+				$data['last_updated'] = new DateTime( $data['last_updated'] );
+			} catch ( \Exception  $e ) {
+				unset( $data['last_updated'] );
+			}
 		}
 
 		$vulnerabilities = new Vulnerabilities();

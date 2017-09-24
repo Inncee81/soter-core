@@ -81,6 +81,19 @@ class Response_Test extends WP_Mock\Tools\TestCase {
 	}
 
 	/** @test */
+	function it_unsets_updated_timestamp_if_invalid() {
+		$response = new Response(
+			self::STATUS_SUCCESS,
+			self::HEADERS_JSON,
+			str_replace( '2017-03-03T19:28:00.000Z', 'ab2017-03-03T19:28:00.000Z', self::BODY_CF7 ),
+			$this->get_cf7_package_mock()
+		);
+
+		$this->assertNull( $response->last_updated );
+		$this->assertFalse( array_key_exists( 'last_updated', $response->get_data() ) );
+	}
+
+	/** @test */
 	function it_provides_access_to_raw_body() {
 		$response = $this->make_cf7_response();
 
