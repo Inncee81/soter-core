@@ -5,7 +5,7 @@
   "homepage": "https://github.com/ssnepenthe/soter-core",
   "license": "GPL-2.0",
   "require": {
-    "php": ">=5.3"
+    "php": ">=7.1"
   },
   "require-dev": {
     "psy/psysh": "^0.8"
