@@ -35,7 +35,8 @@ before_script:
   - composer global require 10up/wp_mock="^0.4"
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-      composer global require wp-coding-standards/wpcs
+    composer global require squizlabs/php_codesniffer="^3.4"
+      composer global require wp-coding-standards/wpcs="^2.1"
       phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
     fi
 
