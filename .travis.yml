@@ -31,6 +31,8 @@ install:
 
 before_script:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - composer global require phpunit/phpunit="^8.0"
+  - composer global require 10up/wp_mock="^0.4"
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
       composer global require wp-coding-standards/wpcs
@@ -38,7 +40,7 @@ before_script:
     fi
 
 script:
-  - vendor/bin/phpunit
+  - phpunit
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
       phpcs

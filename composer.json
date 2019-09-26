@@ -8,8 +8,6 @@
     "php": ">=5.3"
   },
   "require-dev": {
-    "10up/wp_mock": "dev-dev",
-    "phpunit/phpunit": "^5.7",
     "psy/psysh": "^0.8"
   },
   "autoload": {
