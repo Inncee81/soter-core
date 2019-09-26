@@ -1,2 +1,4 @@
 vendor/
 .phpunit.result.cache
+phpunit-printer.yml
+phpunit.xml
