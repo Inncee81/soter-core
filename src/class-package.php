@@ -16,9 +16,9 @@ use WP_Theme;
  * normalization between themes, plugins and WordPress core.
  */
 class Package {
-	const TYPE_PLUGIN = 'plugin';
-	const TYPE_THEME = 'theme';
-	const TYPE_WORDPRESS = 'wordpress'; // WPCS: spelling ok.
+	const TYPE_PLUGIN    = 'plugin';
+	const TYPE_THEME     = 'theme';
+	const TYPE_WORDPRESS = 'wordpress';
 
 	/**
 	 * Package slug.
@@ -49,8 +49,8 @@ class Package {
 	 * @param string $version Package version.
 	 */
 	public function __construct( $slug, $type, $version ) {
-		$this->slug = (string) $slug;
-		$this->type = (string) $type;
+		$this->slug    = (string) $slug;
+		$this->type    = (string) $type;
 		$this->version = (string) $version;
 	}
 
@@ -117,7 +117,7 @@ class Package {
 	 */
 	public static function from_wordpress_env() {
 		$version = get_bloginfo( 'version' );
-		$slug = str_replace( '.', '', $version );
+		$slug    = str_replace( '.', '', $version );
 
 		return new static( $slug, static::TYPE_WORDPRESS, $version );
 	}

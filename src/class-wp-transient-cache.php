@@ -50,7 +50,7 @@ class WP_Transient_Cache implements Cache_Interface {
 			);
 		}
 
-		$this->prefix = (string) $prefix;
+		$this->prefix           = (string) $prefix;
 		$this->default_lifetime = max( 0, intval( $default_lifetime ) );
 	}
 
@@ -135,7 +135,7 @@ class WP_Transient_Cache implements Cache_Interface {
 			throw new \InvalidArgumentException( 'Cache key length must be greater than zero' );
 		}
 
-		$prefix = $this->cache_prefix();
+		$prefix  = $this->cache_prefix();
 		$new_key = $prefix . $key;
 
 		if ( strlen( $new_key ) <= self::MAX_KEY_LENGTH ) {

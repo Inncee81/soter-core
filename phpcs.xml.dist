@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
-<ruleset name="WordPress Coding Standards for Plugins">
-	<description>Generally-applicable sniffs for WordPress plugins</description>
+<ruleset name="WordPress Coding Standards for Soter Core">
+	<description>Some sniffs for Soter Core</description>
 
-	<rule ref="WordPress-Core" />
-	<rule ref="WordPress-Docs" />
-
-    <!-- Check all PHP files in directory tree by default. -->
-    <arg name="extensions" value="php"/>
     <file>.</file>
-
-    <!-- Show sniff codes in all reports -->
-    <arg value="s"/>
-
     <exclude-pattern>*/tests/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <arg value="s"/>
+    <arg name="basepath" value="./"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="8"/>
+
+    <!-- WordPress should include WordPress-Docs, WordPress-Extra -->
+    <!-- WordPress-Extra should include WordPress-Core -->
+    <rule ref="WordPress"/>
 </ruleset>

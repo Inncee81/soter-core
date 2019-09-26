@@ -59,10 +59,12 @@ class WP_Package_Manager implements Package_Manager_Interface {
 	 * @return Package[]
 	 */
 	public function get_themes() {
-		return array_values( array_map(
-			'Soter_Core\\Package::from_theme_object',
-			wp_get_themes()
-		) );
+		return array_values(
+			array_map(
+				'Soter_Core\\Package::from_theme_object',
+				wp_get_themes()
+			)
+		);
 	}
 
 	/**

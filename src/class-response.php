@@ -57,12 +57,11 @@ class Response {
 	 * @param Package  $package Package instance for which the reponse is generated.
 	 */
 	public function __construct( $status, array $headers, $body, Package $package ) {
-		$this->status = intval( $status );
+		$this->status  = intval( $status );
 		$this->headers = $headers;
-		$this->body = (string) $body;
+		$this->body    = (string) $body;
 		$this->package = $package;
-
-		$this->data = $this->generate_data();
+		$this->data    = $this->generate_data();
 	}
 
 	/**
@@ -226,9 +225,12 @@ class Response {
 
 		if ( isset( $data['vulnerabilities'] ) && is_array( $data['vulnerabilities'] ) ) {
 			$vulnerabilities->add_many(
-				array_map( function( array $vulnerability ) {
-					return new Vulnerability( $this->package, $vulnerability );
-				}, $data['vulnerabilities'] )
+				array_map(
+					function( array $vulnerability ) {
+						return new Vulnerability( $this->package, $vulnerability );
+					},
+					$data['vulnerabilities']
+				)
 			);
 		}
 
@@ -249,8 +251,8 @@ class Response {
 		$message = is_null( $message ) ? 'Invalid endpoint' : (string) $message;
 
 		return array(
-			'error' => array(
-				'code' => $this->status,
+			'error'           => array(
+				'code'    => $this->status,
 				'message' => $message,
 			),
 			'vulnerabilities' => new Vulnerabilities(),

@@ -28,8 +28,8 @@ class Api_Client {
 	 * @var array
 	 */
 	protected $route_map = [
-		'plugin' => 'plugins',
-		'theme' => 'themes',
+		'plugin'    => 'plugins',
+		'theme'     => 'themes',
 		'wordpress' => 'wordpresses',
 	];
 

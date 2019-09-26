@@ -34,7 +34,7 @@ class Cached_Http_Client implements Http_Interface {
 	 * @param Cache_Interface $cache Cache instance.
 	 */
 	public function __construct( Http_Interface $http, Cache_Interface $cache ) {
-		$this->http = $http;
+		$this->http  = $http;
 		$this->cache = $cache;
 	}
 

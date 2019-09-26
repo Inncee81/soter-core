@@ -41,7 +41,7 @@ class Checker {
 	 * @param Package_Manager_Interface $package_manager Package manager instance.
 	 */
 	public function __construct( Api_Client $client, Package_Manager_Interface $package_manager ) {
-		$this->client = $client;
+		$this->client          = $client;
 		$this->package_manager = $package_manager;
 	}
 
@@ -64,7 +64,7 @@ class Checker {
 	 * @return Vulnerabilities
 	 */
 	public function check_package( Package $package ) {
-		$response = $this->client->check( $package );
+		$response        = $this->client->check( $package );
 		$vulnerabilities = $response->get_vulnerabilities_for_current_version();
 
 		$this->do_post_check_callbacks( $vulnerabilities, $response );
