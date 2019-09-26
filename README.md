@@ -91,3 +91,35 @@ $checker->add_post_check_callback( function( $vulnerabilities, $response ) {
     ] );
 } );
 ```
+
+## Testing
+
+To run the tests first ensure you have PHPUnit and WP_Mock installed globally:
+
+```
+composer global require phpunit/phpunit="^8.0" 10up/wp_mock="^0.4"
+```
+
+And then run the tests from the soter-core directory:
+
+```
+phpunit
+```
+
+Coding style is enforced with WPCS - first ensure you have phpcs and wpcs installed globally:
+
+```
+composer global require squizlabs/php_codesniffer="^3.4" wp-coding-standards/wpcs="^2.1"
+```
+
+Then configure phpcs to load wpcs:
+
+```
+phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+```
+
+And finally run phpcs from the soter-core directory:
+
+```
+phpcs
+```
