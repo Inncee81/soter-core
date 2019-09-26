@@ -2,9 +2,10 @@
 
 use Soter_Core\Package;
 use Soter_Core\Response;
+use WP_Mock\Tools\TestCase;
 use Soter_Core\Vulnerabilities;
 
-class Response_Test extends WP_Mock\Tools\TestCase {
+class Response_Test extends TestCase {
 	const BODY_CF7 = '{"contact-form-7":{"latest_version":"4.7","last_updated":"2017-03-03T19:28:00.000Z","popular":true,"vulnerabilities":[{"id":7020,"title":"Contact Form 7 <= 3.7.1 - Security Bypass ","created_at":"2014-08-01T10:59:06.000Z","updated_at":"2015-05-15T13:48:25.000Z","published_date":null,"references":{"url":["http://www.securityfocus.com/bid/66381/"],"cve":["2014-2265"]},"vuln_type":"AUTHBYPASS","fixed_in":"3.7.2"},{"id":7022,"title":"Contact Form 7 <= 3.5.2 - File Upload Remote Code Execution","created_at":"2014-08-01T10:59:07.000Z","updated_at":"2015-05-15T13:48:25.000Z","published_date":null,"references":{"url":["http://packetstormsecurity.com/files/124154/"]},"vuln_type":"UPLOAD","fixed_in":"3.5.3"}]}}';
 
 	const HEADERS_HTML = [ 'content-type' => 'text/html; charset=utf-8' ];

@@ -1,8 +1,9 @@
 <?php
 
+use WP_Mock\Tools\TestCase;
 use Soter_Core\WP_Http_Client;
 
-class WP_Http_Client_Test extends WP_Mock\Tools\TestCase {
+class WP_Http_Client_Test extends TestCase {
 	/** @test */
 	function it_converts_wp_error_to_exception() {
 		$this->expectException( RuntimeException::class );

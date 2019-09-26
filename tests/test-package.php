@@ -1,8 +1,9 @@
 <?php
 
 use Soter_Core\Package;
+use WP_Mock\Tools\TestCase;
 
-class Package_Test extends WP_Mock\Tools\TestCase {
+class Package_Test extends TestCase {
 	/** @test */
 	function it_can_be_created_from_plugin_data() {
 		$file = 'akismet/akismet.php';

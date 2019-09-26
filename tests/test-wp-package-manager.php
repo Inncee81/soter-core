@@ -1,13 +1,14 @@
 <?php
 
+use WP_Mock\Tools\TestCase;
 use Soter_Core\WP_Package_Manager;
 
-class WP_Package_Manager_Test extends PHPUnit_Framework_TestCase {
-	function setUp() {
+class WP_Package_Manager_Test extends TestCase {
+	function setUp() : void {
 		WP_Mock::setUp();
 	}
 
-	function tearDown() {
+	function tearDown() : void {
 		WP_Mock::tearDown();
 	}
 

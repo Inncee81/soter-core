@@ -4,6 +4,7 @@ use Soter_Core\Checker;
 use Soter_Core\Package;
 use Soter_Core\Response;
 use Soter_Core\Api_Client;
+use WP_Mock\Tools\TestCase;
 use Soter_Core\Vulnerabilities;
 use Soter_Core\Package_Manager_Interface;
 
@@ -11,7 +12,7 @@ use Soter_Core\Package_Manager_Interface;
  * @todo Add tests for type-specific methods.
  *       These mock chains are a bit ridiculous...
  */
-class Checker_Test extends WP_Mock\Tools\TestCase {
+class Checker_Test extends TestCase {
 	/** @test */
 	function it_can_check_a_package() {
 		$package = Mockery::mock( Package::class );

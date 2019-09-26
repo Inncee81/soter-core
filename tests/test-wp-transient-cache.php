@@ -1,8 +1,9 @@
 <?php
 
+use WP_Mock\Tools\TestCase;
 use Soter_Core\WP_Transient_Cache;
 
-class WP_Transient_Cache_Test extends WP_Mock\Tools\TestCase {
+class WP_Transient_Cache_Test extends TestCase {
 	/** @test */
 	function it_throws_for_prefix_greater_than_131_characters() {
 		$this->expectException( InvalidArgumentException::class );

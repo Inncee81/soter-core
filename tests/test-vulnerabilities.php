@@ -1,15 +1,16 @@
 <?php
 
+use WP_Mock\Tools\TestCase;
 use Soter_Core\Vulnerability;
 use Soter_Core\Vulnerabilities;
 
 /**
  * @todo Verify that a vuln can't be added twice - aka unique vulns.
  */
-class Vulnerabilities_Test extends WP_Mock\Tools\TestCase {
+class Vulnerabilities_Test extends TestCase {
 	protected $vulnerabilities;
 
-	public function setUp() {
+	public function setUp() : void {
 		parent::setUp();
 
 		$one = Mockery::mock( Vulnerability::class );
@@ -21,7 +22,7 @@ class Vulnerabilities_Test extends WP_Mock\Tools\TestCase {
 		$this->vulnerabilities = [ $one, $two ];
 	}
 
-	public function tearDown() {
+	public function tearDown() : void {
 		parent::tearDown();
 
 		$this->vulnerabilities = null;

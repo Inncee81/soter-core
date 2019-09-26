@@ -1,5 +1,6 @@
 <?php
 
+use WP_Mock\Tools\TestCase;
 use Soter_Core\Http_Interface;
 use Soter_Core\Cache_Interface;
 use Soter_Core\Cached_Http_Client;
@@ -7,7 +8,7 @@ use Soter_Core\Cached_Http_Client;
 /**
  * @todo Link version in cache key to current package version.
  */
-class Cached_Http_Client_Test extends WP_Mock\Tools\TestCase {
+class Cached_Http_Client_Test extends TestCase {
 	/** @test */
 	function it_checks_for_cached_response_first() {
 		$http = Mockery::mock( Http_Interface::class );

@@ -2,14 +2,15 @@
 
 use Soter_Core\Package;
 use Soter_Core\Api_Client;
+use WP_Mock\Tools\TestCase;
 use Soter_Core\Http_Interface;
 
-class Api_Client_Test extends WP_Mock\Tools\TestCase {
+class Api_Client_Test extends TestCase {
 	protected $cf7_response;
 	protected $twentyfifteen_response;
 	protected $wordpress_response;
 
-	public function setUp() {
+	public function setUp() : void {
 		parent::setUp();
 
 		$this->cf7_response = sct_get_http_fixture_array( '/api/v2/plugins/contact-form-7' );
@@ -17,7 +18,7 @@ class Api_Client_Test extends WP_Mock\Tools\TestCase {
 		$this->wordpress_response = sct_get_http_fixture_array( '/api/v2/wordpresses/474' );
 	}
 
-	public function tearDown() {
+	public function tearDown() : void {
 		parent::tearDown();
 
 		$this->cf7_response = null;
