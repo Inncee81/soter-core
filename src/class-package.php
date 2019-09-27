@@ -8,6 +8,7 @@
 namespace Soter_Core;
 
 use WP_Theme;
+use InvalidArgumentException;
 
 /**
  * Defines the package class.
@@ -105,9 +106,20 @@ class Package {
 	 * @param  WP_Theme $theme Theme object.
 	 *
 	 * @return static
+	 *
+	 * @throws InvalidArgumentException When the version prop is not available on the theme.
 	 */
 	public static function from_theme_object( WP_Theme $theme ) {
-		return new static( $theme->get_stylesheet(), static::TYPE_THEME, $theme->get( 'Version' ) );
+		$version = $theme->get( 'Version' );
+
+		if ( false === $version ) {
+			// I don't think WordPress allows theme to omit version so should never reach this...
+			throw new InvalidArgumentException(
+				"Unable to get theme version for {$theme->get_stylesheet()}"
+			);
+		}
+
+		return new static( $theme->get_stylesheet(), static::TYPE_THEME, $version );
 	}
 
 	/**

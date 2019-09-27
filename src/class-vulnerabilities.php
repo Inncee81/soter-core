@@ -188,7 +188,7 @@ class Vulnerabilities implements IteratorAggregate, Countable {
 	/**
 	 * Get an iterator for looping over the vulnerabilities list.
 	 *
-	 * @return Traversable
+	 * @return \Traversable
 	 */
 	public function getIterator() {
 		return new ArrayIterator( $this->vulnerabilities );

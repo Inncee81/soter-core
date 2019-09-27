@@ -45,12 +45,23 @@ class WP_Http_Client implements Http_Interface {
 		);
 
 		if ( is_wp_error( $response ) ) {
+			/**
+			 * Not sure how to best get psalm to understand that $response is a WP_Error instance...
+			 *
+			 * @psalm-suppress PossiblyInvalidMethodCall
+			 */
 			throw new \RuntimeException( $response->get_error_message() );
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/** @psalm-var array $response */
+		$headers = wp_remote_retrieve_headers( $response );
+
 		return array(
 			wp_remote_retrieve_response_code( $response ),
-			wp_remote_retrieve_headers( $response )->getAll(),
+			$headers instanceof \Requests_Utility_CaseInsensitiveDictionary
+				? $headers->getAll()
+				: $headers,
 			wp_remote_retrieve_body( $response ),
 		);
 	}

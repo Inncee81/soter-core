@@ -41,6 +41,11 @@ class WP_Package_Manager implements Package_Manager_Interface {
 	 */
 	public function get_plugins() {
 		if ( ! function_exists( 'get_plugins' ) ) {
+			// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+			/**
+			 * @psalm-suppress UndefinedConstant
+			 * @psalm-suppress UnresolvableInclude
+			 */
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 

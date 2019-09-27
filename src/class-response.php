@@ -204,6 +204,8 @@ class Response {
 			);
 		}
 
+		// phpcs:ignore Generic.Commenting.DocComment.MissingShort
+		/** @psalm-var array<string, array> $decoded */
 		$data = current( $decoded );
 		$slug = key( $decoded );
 
