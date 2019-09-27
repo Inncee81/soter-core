@@ -12,37 +12,39 @@ namespace Soter_Core;
  */
 class WP_Http_Client implements Http_Interface {
 	/**
-	 * The user agent to use when making requests.
+	 * Default user-agent string to use for HTTP requests.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	protected $user_agent;
 
 	/**
 	 * Class constructor.
 	 *
-	 * @param string $user_agent The user agent to use when making requests.
+	 * @param string|null $user_agent Default user-agent string to use for HTTP requests.
 	 */
-	public function __construct( $user_agent ) {
-		$this->user_agent = (string) $user_agent;
+	public function __construct( string $user_agent = null ) {
+		if ( null !== $user_agent ) {
+			$this->user_agent = (string) $user_agent;
+		}
 	}
 
 	/**
 	 * Send a GET request to the given URL.
 	 *
-	 * @param  string $url The URL to make a request against.
+	 * @param string $url  The URL to make a request against.
+	 * @param array  $args Additional request args.
 	 *
 	 * @return array
 	 *
 	 * @throws \RuntimeException When there is an error.
 	 */
-	public function get( $url ) {
-		$response = wp_safe_remote_get(
-			(string) $url,
-			array(
-				'user-agent' => $this->user_agent,
-			)
-		);
+	public function get( $url, array $args = [] ) {
+		if ( ! array_key_exists( 'user-agent', $args ) && null !== $this->user_agent ) {
+			$args['user-agent'] = $this->user_agent;
+		}
+
+		$response = wp_safe_remote_get( (string) $url, $args );
 
 		if ( is_wp_error( $response ) ) {
 			/**

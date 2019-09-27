@@ -13,7 +13,14 @@ use InvalidArgumentException;
  * Defines the API client class.
  */
 class Api_Client {
-	const BASE_URL = 'https://wpvulndb.com/api/v2';
+	const BASE_URL = 'https://wpvulndb.com/api/v3';
+
+	/**
+	 * WPVulnDB APIv3 key.
+	 *
+	 * @var string
+	 */
+	protected $api_key;
 
 	/**
 	 * HTTP client.
@@ -36,10 +43,12 @@ class Api_Client {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Http_Interface $http  HTTP instance.
+	 * @param string         $api_key WPVulnDB APIv3 key.
+	 * @param Http_Interface $http    HTTP instance.
 	 */
-	public function __construct( Http_Interface $http ) {
-		$this->http = $http;
+	public function __construct( string $api_key, Http_Interface $http ) {
+		$this->api_key = $api_key;
+		$this->http    = $http;
 	}
 
 	/**
@@ -50,7 +59,14 @@ class Api_Client {
 	 * @return Response
 	 */
 	public function check( Package $package ) {
-		list( $status, $headers, $body ) = $this->http->get( $this->build_url_for( $package ) );
+		list( $status, $headers, $body ) = $this->http->get(
+			$this->build_url_for( $package ),
+			[
+				'headers' => [
+					'Authorization' => "Token token={$this->api_key}",
+				],
+			]
+		);
 
 		return new Response( $status, $headers, $body, $package );
 	}

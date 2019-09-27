@@ -14,7 +14,8 @@ interface Http_Interface {
 	/**
 	 * Send a GET request to a given URL.
 	 *
-	 * @param  string $url The URL to make a request against.
+	 * @param  string $url  The URL to make a request against.
+	 * @param  array  $args Additional request args.
 	 *
 	 * @return array       The array contents should match the following:
 	 *                         [0] int    Response code.
@@ -23,5 +24,5 @@ interface Http_Interface {
 	 *
 	 * @throws  \RuntimeException When there is an error.
 	 */
-	public function get( $url );
+	public function get( $url, array $args = [] );
 }

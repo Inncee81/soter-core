@@ -14,7 +14,7 @@ class Cached_Http_Client_Test extends TestCase {
 		$http = Mockery::mock( Http_Interface::class );
 		$cache = Mockery::mock( Cache_Interface::class )
 			->shouldReceive( 'get' )
-			->with( 'soter_core:v0.2.0:http:get:testing' )
+			->with( 'soter_core:v0.3.0:' . sha1( "http:get:testing:" . serialize( [] ) ) )
 			->once()
 			->andReturn( 'cached-response' )
 			->getMock();
@@ -26,6 +26,7 @@ class Cached_Http_Client_Test extends TestCase {
 
 	/** @test */
 	function it_falls_back_to_http_get_and_saves_response_to_cache() {
+		$cache_key = 'soter_core:v0.3.0:' . sha1( "http:get:testing:" . serialize( [] ) );
 		$http = Mockery::mock( 'Soter_Core\\Http_Interface' )
 			->shouldReceive( 'get' )
 			->with( 'testing' )
@@ -34,11 +35,11 @@ class Cached_Http_Client_Test extends TestCase {
 			->getMock();
 		$cache = Mockery::mock( 'Soter_Core\\Cache_Interface' )
 			->shouldReceive( 'get' )
-			->with( 'soter_core:v0.2.0:http:get:testing' )
+			->with( $cache_key )
 			->once()
 			->andReturnNull()
 			->shouldReceive( 'put' )
-			->with( 'soter_core:v0.2.0:http:get:testing', 'fresh-response' )
+			->with( $cache_key, 'fresh-response' )
 			->once()
 			->getMock();
 

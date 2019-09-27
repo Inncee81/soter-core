@@ -11,7 +11,8 @@ namespace Soter_Core;
  * Defines the cached HTTP client class.
  */
 class Cached_Http_Client implements Http_Interface {
-	const KEY = 'soter_core:v0.2.0:http:get:%s';
+	// @todo Consider options for automatically syncing version with the latest github release.
+	const KEY = 'soter_core:v0.3.0:%s';
 
 	/**
 	 * Cache instance.
@@ -41,12 +42,14 @@ class Cached_Http_Client implements Http_Interface {
 	/**
 	 * Check for a cached response, make a GET request to the given URL as necessary.
 	 *
-	 * @param  string $url The URL to make a GET request against.
+	 * @param  string $url  The URL to make a GET request against.
+	 * @param  array  $args Additional request args.
 	 *
 	 * @return array
 	 */
-	public function get( $url ) {
-		$key = sprintf( self::KEY, $url );
+	public function get( $url, array $args = [] ) {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+		$key = sprintf( static::KEY, sha1( "http:get:{$url}:" . serialize( $args ) ) );
 
 		$value = $this->cache->get( $key );
 

@@ -13,6 +13,7 @@ class Api_Client_Test extends TestCase {
 	public function setUp() : void {
 		parent::setUp();
 
+		// @todo Move response fixtures to v3.
 		$this->cf7_response = sct_get_http_fixture_array( '/api/v2/plugins/contact-form-7' );
 		$this->twentyfifteen_response = sct_get_http_fixture_array( '/api/v2/themes/twentyfifteen' );
 		$this->wordpress_response = sct_get_http_fixture_array( '/api/v2/wordpresses/474' );
@@ -31,7 +32,14 @@ class Api_Client_Test extends TestCase {
 		$http = Mockery::mock( Http_Interface::class )
 			->shouldReceive( 'get' )
 			->once()
-			->with( 'https://wpvulndb.com/api/v2/plugins/contact-form-7' )
+			->with(
+				'https://wpvulndb.com/api/v3/plugins/contact-form-7',
+				[
+					'headers' => [
+						'Authorization' => 'Token token=fake-key',
+					],
+				]
+			)
 			->andReturn( $this->cf7_response )
 			->getMock();
 		$package = Mockery::mock( Package::class )
@@ -43,7 +51,7 @@ class Api_Client_Test extends TestCase {
 			->andReturn( 'contact-form-7' )
 			->getMock();
 
-		$client = new Api_Client( $http );
+		$client = new Api_Client( 'fake-key', $http );
 		$response = $client->check( $package );
 
 		$this->assertInstanceOf( 'Soter_Core\\Response', $response );
@@ -58,7 +66,14 @@ class Api_Client_Test extends TestCase {
 		$http = Mockery::mock( Http_Interface::class )
 			->shouldReceive( 'get' )
 			->once()
-			->with( 'https://wpvulndb.com/api/v2/themes/twentyfifteen' )
+			->with(
+				'https://wpvulndb.com/api/v3/themes/twentyfifteen',
+				[
+					'headers' => [
+						'Authorization' => 'Token token=fake-key',
+					],
+				]
+			)
 			->andReturn( $this->twentyfifteen_response )
 			->getMock();
 		$package = Mockery::mock( Package::class )
@@ -70,7 +85,7 @@ class Api_Client_Test extends TestCase {
 			->andReturn( 'twentyfifteen' )
 			->getMock();
 
-		$client = new Api_Client( $http );
+		$client = new Api_Client( 'fake-key', $http );
 		$response = $client->check( $package );
 
 		$this->assertInstanceOf( 'Soter_Core\\Response', $response );
@@ -85,7 +100,14 @@ class Api_Client_Test extends TestCase {
 		$http = Mockery::mock( Http_Interface::class )
 			->shouldReceive( 'get' )
 			->once()
-			->with( 'https://wpvulndb.com/api/v2/wordpresses/474' )
+			->with(
+				'https://wpvulndb.com/api/v3/wordpresses/474',
+				[
+					'headers' => [
+						'Authorization' => 'Token token=fake-key',
+					],
+				]
+			)
 			->andReturn( $this->wordpress_response )
 			->getMock();
 		$package = Mockery::mock( Package::class )
@@ -100,7 +122,7 @@ class Api_Client_Test extends TestCase {
 			->andReturn( '4.7.4' )
 			->getMock();
 
-		$client = new Api_Client( $http );
+		$client = new Api_Client( 'fake-key', $http );
 		$response = $client->check( $package );
 
 		$this->assertInstanceOf( 'Soter_Core\\Response', $response );
@@ -121,7 +143,7 @@ class Api_Client_Test extends TestCase {
 			->andReturn( 'fake' )
 			->getMock();
 
-		$client = new Api_Client( $http );
+		$client = new Api_Client( 'fake-key', $http );
 		$response = $client->check( $package );
 	}
 }
