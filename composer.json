@@ -8,7 +8,8 @@
     "php": ">=7.1"
   },
   "require-dev": {
-    "psy/psysh": "^0.8"
+    "psy/psysh": "^0.8",
+    "giacocorsiglia/wordpress-stubs": "^5.1"
   },
   "autoload": {
     "classmap": ["src/"]
