@@ -14,9 +14,9 @@ class Api_Client_Test extends TestCase {
 		parent::setUp();
 
 		// @todo Move response fixtures to v3.
-		$this->cf7_response = sct_get_http_fixture_array( '/api/v2/plugins/contact-form-7' );
-		$this->twentyfifteen_response = sct_get_http_fixture_array( '/api/v2/themes/twentyfifteen' );
-		$this->wordpress_response = sct_get_http_fixture_array( '/api/v2/wordpresses/474' );
+		$this->cf7_response = sct_get_http_fixture_array( '/api/v3/plugins/contact-form-7' );
+		$this->twentyfifteen_response = sct_get_http_fixture_array( '/api/v3/themes/twentyfifteen' );
+		$this->wordpress_response = sct_get_http_fixture_array( '/api/v3/wordpresses/474' );
 	}
 
 	public function tearDown() : void {
